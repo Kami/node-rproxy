@@ -1,0 +1,37 @@
+{
+  "name": "node-reverse-http-proxy",
+  "description": "A reverse proxy thing.",
+  "version": "0.1.0",
+  "author": "Tomaz Muraus <tomaz+npm@tomaz.me> http://www.tomaz.me",
+  "keywords": [ "proxy", "http proxy"],
+  "homepage": "https://github.com/Kami/node-reverse-http-proxy",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Kami/node-reverse-http-proxy.git"
+  },
+  "directories": {
+    "lib": "./lib",
+    "example": "./example",
+    "bin": "./bin"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "dependencies": {
+    "async": "= 0.1.9",
+    "sprintf": "= 0.1.1",
+    "http-proxy": "= 0.8.0",
+    "optimist": "= 0.3.1"
+  },
+  "engines": {
+    "node": ">= 0.4.0 && < 0.7.0"
+  },
+  "main": "./index",
+  "bin": "./bin/server",
+  "licenses" : [
+    {
+      "type" : "Apache",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  ]
+}
