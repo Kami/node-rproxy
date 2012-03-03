@@ -7,6 +7,12 @@
                             "authentication"]
   },
 
+  "database": {
+    "host": "localhost",
+    "port": 6769,
+    "password": null
+  },
+
   "middleware": {
     "identity_provider": {},
      "rate_limiting": {
