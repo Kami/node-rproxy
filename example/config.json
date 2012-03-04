@@ -1,4 +1,11 @@
 {
+
+  "server": {
+    "host": "localhost",
+    "port": 8000,
+    "secure": false
+  },
+
   "target": {
     "host": "localhost",
     "port": 8787,
@@ -24,7 +31,7 @@
   },
 
   "rate_limits": [
-    ['METHOD', 'PATH REGEX', 'LIMIT', 'TIME UNIT'],
-    ['POST', '/path/(.*?)', 100, '24hr']
+    ["METHOD", "PATH REGEX", "LIMIT", "TIME UNIT"],
+    ["POST", "/path/(.*?)", 100, "24hr"]
   ]
 }
