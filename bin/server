@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 
+var logmagic = require('logmagic');
 var argv = require('optimist')
-  .usage('Usage: $0 -c [config path]')
+  .usage('Usage: $0 -c [config path] -l [log level]')
   .alias('c', 'config')
+  .alias('l', 'loglevel')
   .default('c', './config.json')
+  .default('l', 'DEBUG')
   .demand(['c'])
   .argv;
 
 var ReverseProxyServer = require('../lib/server').ReverseProxyServer;
 var config = require('../lib/util/config');
+
+// Set up logger
+logmagic.route('__root__', logmagic[argv.l], 'console');
 
 try {
   config = config.loadConfig(argv.c);
