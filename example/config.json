@@ -16,7 +16,7 @@
 
   "database": {
     "host": "localhost",
-    "port": 6769,
+    "port": 6379,
     "password": null
   },
 
