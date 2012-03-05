@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var logmagic = require('logmagic');
+var log = logmagic.local('bin.server');
 var argv = require('optimist')
   .usage('Usage: $0 -c [config path] -l [log level]')
   .alias('c', 'config')
