@@ -31,7 +31,11 @@
   },
 
   "rate_limits": [
-    ["METHOD", "PATH REGEX", "LIMIT", "TIME UNIT"],
-    ["POST", "/path/(.*?)", 100, "24hr"]
+    {
+      "method": "GET",
+      "path_regex": "/.*?",
+      "limit": 10,
+      "period": 3600
+    }
   ]
 }
