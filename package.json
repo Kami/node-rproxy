@@ -18,7 +18,7 @@
     "test": "make test"
   },
   "dependencies": {
-    "async": "= 0.1.9",
+    "async": "= 0.1.18",
     "sprintf": "= 0.1.1",
     "logmagic": "= 0.1.4",
     "http-proxy": "= 0.8.0",
