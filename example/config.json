@@ -26,7 +26,10 @@
   "middleware": {
     "identity_provider": {},
      "rate_limiting": {
-        "depends": ["identity_provider"]
+        "depends": ["identity_provider"],
+        "settings": {
+          "bucket_size": 10
+        }
     },
     "authentication": {
       "depends": ["identity_provider"],
@@ -44,7 +47,7 @@
       "method": "GET",
       "path_regex": "/.*?",
       "limit": 10,
-      "period": 3600
+      "period": 60
     }
   ]
 }
