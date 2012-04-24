@@ -25,6 +25,7 @@ catch (err) {
   process.exit(1);
 }
 
+log.debug('Using config ${config}', {'config': argv.c});
 var server = new ReverseProxyServer(config);
 server.run(function(err) {
   if (err) {
