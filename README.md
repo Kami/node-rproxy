@@ -2,14 +2,19 @@ A reverse proxy thing.
 
 # Features
 
+* Authentication via the Keystone API
+* Flexible rate limiting based on the source IP address
+* Supported database backends
+  * Redis
+  * Cassandra
+
 # Requirements
 
 - Node.js
-- Redis (for caching auth tokens and storing rate limit values)
+- Redis or Cassandra (for caching auth tokens and storing rate limit values)
 
 # TODO
 
-- Better name
 - Support for multiple targets and round robin balancing across them
 - Performance optimizations
 
