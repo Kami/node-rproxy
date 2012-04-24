@@ -1,0 +1,19 @@
+{
+  "redis": {
+    "cmd": ["dev-bin/redis.sh"],
+    "cwd": ["__dirname", ".."],
+    "log_file": "test-redis.log",
+    "wait_for": "socket",
+    "wait_for_options": {
+      "host": "127.0.0.1",
+      "port": 6379
+    },
+    "timeout": 15000
+  },
+
+  "mock_auth_api": {
+    "cmd": ["dev-bin/mock-auth-api-server"],
+    "cwd": ["__dirname", ".."],
+    "log_file": "test-mock-auth-api-server.log"
+  }
+}

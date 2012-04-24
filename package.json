@@ -28,10 +28,11 @@
   },
   "devDependencies": {
      "whiskey": "0.6.8",
-     "jshint": "0.5.9"
+     "jshint": "0.5.9",
+     "express": "2.5.6"
   },
   "engines": {
-    "node": ">= 0.4.0 && < 0.7.0"
+    "node": ">= 0.6.0 && < 0.7.0"
   },
   "main": "./index",
   "bin": "./bin/server",
@@ -42,6 +43,7 @@
     }
   ],
   "scripts": {
-    "lint": "./lint.sh"
+    "lint": "./lint.sh",
+    "test": "NODE_PATH=lib node_modules/whiskey/bin/whiskey --tests tests/test-proxy.js --dependencies tests/dependencies.json --realtime --sequential"
   }
 }
