@@ -1,0 +1,54 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 9000,
+    "secure": false
+  },
+
+  "target": {
+    "host": "localhost",
+    "port": 9001,
+    "secure": false,
+    "middleware_run_list": ["identity_provider", "rate_limiting",
+                            "authentication"]
+  },
+
+  "database": {
+    "backend": "redis",
+    "settings": {
+      "host": "localhost",
+      "port": 6379,
+      "password": null
+    }
+  },
+
+  "middleware": {
+    "identity_provider": {},
+     "rate_limiting": {
+        "depends": ["identity_provider"],
+        "settings": {
+          "bucket_size": 10,
+          "limits": [
+            {
+              "method": "GET",
+              "path_regex": "/.*",
+              "limit": 10,
+              "period": 60
+            },
+            {
+              "method": "GET",
+              "path_regex": "/test/.*",
+              "limit": 4,
+              "period": 60
+            }
+          ]
+        }
+    },
+    "authentication": {
+      "depends": ["identity_provider"],
+      "settings": {
+        "urls": ["http://127.0.0.1:23542"]
+      }
+    }
+  }
+}
