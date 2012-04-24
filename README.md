@@ -18,6 +18,8 @@ A reverse proxy thing.
 Configuration is stored in a JSON format in a file. Example configuration can
 be found in `example/config.json`.
 
+## Global configuration options
+
 ## Middleware configuration options
 
 ### Identity provider
@@ -54,9 +56,6 @@ This middleware provides flexible rate limiting based on the requested paths.
 
 - Support for multiple targets and round robin balancing across them
 - Performance optimizations
-
-# Concepts
-
-## Middleware
-
-A middleware acts on a request and can perform different things...
+- Usage middleware
+- Stats middleware
+- Log middleware
