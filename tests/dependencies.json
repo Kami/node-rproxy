@@ -1,6 +1,6 @@
 {
   "redis": {
-    "cmd": ["dev-bin/redis.sh"],
+    "cmd": ["dev-bin/redis.sh", "tests/conf/redis.conf"],
     "cwd": ["__dirname", ".."],
     "log_file": "test-redis.log",
     "wait_for": "socket",
