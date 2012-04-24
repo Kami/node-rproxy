@@ -111,11 +111,11 @@ function getToken_v2_0(req, res) {
     reason = 'missing auth in body: ' + JSON.stringify(req.body);
   }
   else {
-    creds = req.body.auth.passwordCredentials || req.body.auth['RAX-KSKEY:apiKeyCredentials'];
-    username = creds.username || 'reachdevsf';
-
+    creds = req.body.auth;
+    tenantId = creds.tenantName;
+    username = TENANT_ID_TO_USERNAME_MAP[tenantId];
     token = USERNAME_TO_TOKEN_MAP[username];
-    tenantId = USERNAME_TO_TENANT_ID_MAP[username];
+
     if (!token || !tenantId) {
       fail = true;
       statusCode = 501;
@@ -134,7 +134,8 @@ function getToken_v2_0(req, res) {
         "access": {
             "token": {
                 "id": token,
-                "expires": expires
+                "expires": expires,
+                "tenant": {"id": tenantId, "name": tenantId}
             },
             "serviceCatalog": [
                 {
