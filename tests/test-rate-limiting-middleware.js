@@ -30,7 +30,7 @@ exports['test_rate_limiting'] = function(test, assert) {
     },
 
     function issueRequestsPath1NotRateLimited(callback) {
-      async.forEachSeries([1, 2, 3, 4], function(_, callback) {
+      async.forEach([1, 2, 3, 4], function(_, callback) {
         request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
@@ -50,7 +50,7 @@ exports['test_rate_limiting'] = function(test, assert) {
     },
 
     function issueRequestsPath2NotRateLimited(callback) {
-      async.forEachSeries([7, 8, 9, 10], function(_, callback) {
+      async.forEach([7, 8, 9, 10], function(_, callback) {
         request('http://127.0.0.1:9000/bar', 'GET', null, options, function(err, res) {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
