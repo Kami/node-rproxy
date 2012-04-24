@@ -44,7 +44,7 @@ exports['test_rate_limiting'] = function(test, assert) {
       request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
         assert.ok(err);
         assert.ok(err.statusCode, 400);
-        assert.match(JSON.parse(res.body).message, /Limit of 4 requests in 60 seconds for path .*? has been reached/i);
+        assert.match(JSON.parse(res.body).message, /Limit of 4 requests in 8 seconds for path .*? has been reached/i);
         callback();
       });
     },
@@ -59,15 +59,39 @@ exports['test_rate_limiting'] = function(test, assert) {
       }, callback);
     },
 
-    function testPath1IsRateLimited(callback) {
+    function testPath2IsRateLimited(callback) {
       // After 10 requests total, path 2 should be rate limited
       request('http://127.0.0.1:9000/bar', 'GET', null, options, function(err, res) {
         assert.ok(err);
         assert.ok(err.statusCode, 400);
-        assert.match(JSON.parse(res.body).message, /Limit of 10 requests in 60 seconds for path .*? has been reached/i);
+        assert.match(JSON.parse(res.body).message, /Limit of 10 requests in 8 seconds for path .*? has been reached/i);
         callback();
       });
     },
+
+    function wait(callback) {
+      // Bucket size is 10 seconds, wait period + 2 seconds before checking
+      // the limits again
+      setTimeout(callback, (10 * 1000));
+    },
+
+    function testPath2IsNotRateLimited(callback) {
+      // Limit shouldn't affect this request anymore
+      request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
+        assert.ok(!err);
+        assert.equal(res.statusCode, 200);
+        callback();
+      });
+    },
+
+    function testPath2IsNotRateLimited(callback) {
+      // Limit shouldn't affect this request anymore
+      request('http://127.0.0.1:9000/bar', 'GET', null, options, function(err, res) {
+        assert.ok(!err);
+        assert.equal(res.statusCode, 200);
+        callback();
+      });
+    }
   ],
 
   function(err) {
@@ -75,7 +99,8 @@ exports['test_rate_limiting'] = function(test, assert) {
       server.close();
     }
 
-    assert.equal(reqCountPath1, 4);
+    assert.equal(reqCountPath1, 5);
+    assert.equal(reqCountPath2, 5);
     test.finish();
   });
 };
