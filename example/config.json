@@ -26,7 +26,13 @@
         "depends": ["identity_provider"]
     },
     "authentication": {
-      "depends": ["identity_provider"]
+      "depends": ["identity_provider"],
+      "settings": {
+        "username": null,
+        "password": null,
+        "us_url": "https://auth.api.rackspacecloud.com/v2.0",
+        "uk_url": "https://lon.auth.api.rackspacecloud.com/v2.0"
+      }
     }
   },
 
