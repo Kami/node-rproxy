@@ -62,7 +62,11 @@ exports.test_rate_limiting = function(test, assert) {
           assert.equal(res.statusCode, 200);
           callback();
         });
-      }, callback);
+      },
+
+      function() {
+        setTimeout(callback, 1000);
+      });
     },
 
     function testPath2IsRateLimited(callback) {
