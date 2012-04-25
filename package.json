@@ -45,6 +45,7 @@
   ],
   "scripts": {
     "lint": "./scripts/lint.sh",
-    "test": "./scripts/tests.sh"
+    "test": "./scripts/tests.sh",
+    "test-travisci": "TRAVISCI=1 ./scripts/tests.sh"
   }
 }
