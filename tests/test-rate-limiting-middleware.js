@@ -3,7 +3,7 @@ var async = require('async');
 var request = require('util/request').request;
 var testUtil = require('util/test');
 
-exports['test_rate_limiting'] = function(test, assert) {
+exports.test_rate_limiting = function(test, assert) {
   var options = {'return_response': true, 'expected_status_codes': [200]}, server = null,
       reqCountPath1 = 0, reqCountPath2 = 0;
 

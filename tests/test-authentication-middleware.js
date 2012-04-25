@@ -3,7 +3,7 @@ var async = require('async');
 var request = require('util/request').request;
 var testUtil = require('util/test');
 
-exports['test_missing_auth_token'] = function(test, assert) {
+exports.test_missing_auth_token = function(test, assert) {
   var options = {'return_response': true};
 
   options.headers = {'X-Tenant-Id': '1234'};
@@ -15,7 +15,7 @@ exports['test_missing_auth_token'] = function(test, assert) {
   });
 };
 
-exports['test_invalid_auth_token'] = function(test, assert) {
+exports.test_invalid_auth_token = function(test, assert) {
   var options = {'return_response': true};
 
   options.headers = {'X-Tenant-Id': '1234', 'X-Auth-Token': 'invalid'};
@@ -27,7 +27,7 @@ exports['test_invalid_auth_token'] = function(test, assert) {
   });
 };
 
-exports['test_valid_auth_token'] = function(test, assert) {
+exports.test_valid_auth_token = function(test, assert) {
   var options = {'return_response': true, 'expected_status_codes': [200]}, server = null, reqCount = 0;
 
   async.waterfall([
