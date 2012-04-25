@@ -52,7 +52,7 @@
     },
     "usage": {
       "settings": {
-        "atom_hopper_url": "http://127.0.0.1:9002/hopper",
+        "url": "http://127.0.0.1:9002/hopper",
         "service_name": "maas",
         "region": "us",
         "datacenter": "dfw2"
