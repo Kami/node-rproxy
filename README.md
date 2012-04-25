@@ -1,4 +1,6 @@
-A reverse proxy thing.
+## node-rproxy (Eon)
+
+A reverse proxy for RESTful services.
 
 # Features
 
@@ -44,13 +46,15 @@ UK Keystone server.
 This middleware provides flexible rate limiting based on the requested paths.
 
 * `bucket_size` - Size of a bucket in seconds. This value also specifies a
-  minimum time period you can rate limit on.
+minimum time period you can rate limit on.
 * `limits` - An array of limit objects. Each object has the following keys:
   * `method` - HTTP method of the limited path
   * `path_regex` - Regular expression for the limited path
   * `limit` - Request limit for this path
   * `period` - Period in seconds. This value can't be smaller than
   `bucket_size`
+
+### Usage
 
 # TODO
 
