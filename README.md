@@ -20,19 +20,19 @@ A reverse proxy for RESTful services.
 Configuration is stored in a JSON format in a file. Example configuration can
 be found in `example/config.json`.
 
-## Global configuration options
+# Middleware configuration options
 
-## Middleware configuration options
-
-### Identity provider
+## Identity provider
 
 This middleware parses a user tenant id from the header called `X-Tenant-Id`
 or from the URL and puts it on the request object.
 
-### Authentication
+## Authentication
 
 This middleware authenticates a user against the [Keystone
 API](http://docs.openstack.org/incubation/identity-dev-guide/content/Overview-Keystone-API-d1e62.html).
+
+### Settings
 
 * `username` - admin username for the Keystone auth server
 * `password` - admin password for the Keystone auth server
@@ -42,9 +42,17 @@ least one URL returns a success. By default this array contains URL for US and
 UK Keystone server.
 * `whitelist` - A list of paths which don't require authentication
 
-### Rate limiting
+### Error codes
+
+* `NR-1000` - missing `X-Tenant-Id` header
+* `NR-1001` - missing `X-Auth-Token` header
+* `NR-1002` - invalid or expired auth token
+
+## Rate limiting
 
 This middleware provides flexible rate limiting based on the requested paths.
+
+### Settings
 
 * `bucket_size` - Size of a bucket in seconds. This value also specifies a
   minimum time period you can rate limit on.
@@ -59,10 +67,16 @@ This middleware provides flexible rate limiting based on the requested paths.
 * `view_backend_path` - Path on the backend where the users limits are sent to
   when user hits `view_path` on the proxy.
 
-### Usage
+### Error codes
+
+* `NR-2000` - rate limit has been reached
+
+## Usage
 
 This middleware intercepts special usage headers returned by the backend and
 sends usage events to an [Atom Hopper](http://atomhopper.org/) instance.
+
+### Settings
 
 * `url` - Atom Hopper instance URL
 * `service_name` - Name of the service
@@ -71,7 +85,8 @@ sends usage events to an [Atom Hopper](http://atomhopper.org/) instance.
 
 ## Special header names
 
-- X-RP-...
+* X-RP-Error-Code
+* X-RP-Error-Message
 
 # TODO
 
@@ -79,5 +94,4 @@ sends usage events to an [Atom Hopper](http://atomhopper.org/) instance.
 - Performance optimizations
 - Stats middleware
 - Log middleware
-- White list for authentication middleware
 - Integration guide
