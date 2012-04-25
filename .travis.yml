@@ -1,0 +1,8 @@
+language: node_js
+
+node:js
+  - 0.6
+
+notifications:
+  email:
+    - tomaz+travisci@tomaz.me
