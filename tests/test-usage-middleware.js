@@ -14,12 +14,13 @@ function notInObject(assert, obj, items) {
 
 exports.test_usage_middleware = function(test, assert) {
   var entityData = {'id': 'a', 'name': 'test', 'ip': '127.0.0.1'},
-      baseHeaders = {'Content-Type': 'application/json', 'X-Usage-Resource-Id': 'a',
-                     'X-Usage-Resource-Name': 'entity', 'X-Usage-Resource-Data': JSON.stringify(entityData)},
       options = {'return_response': true, 'expected_status_codes': [200]}, server1 = null, server2 = null,
-      headerNames, atomHopperReqCount = 0;
+      headerNames, atomHopperReqCount = 0, baseHeaders, ts = misc.getUnixTimestamp();
 
   options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
+  baseHeaders = {'Content-Type': 'application/json', 'X-Usage-Resource-Id': 'a',
+                 'X-Usage-Resource-Name': 'entity', 'X-Usage-Resource-Timestamp': ts,
+                 'X-Usage-Resource-Data': JSON.stringify(entityData)};
   headerNames = usageMiddleware.HEADER_KEY_NAMES;
   async.waterfall([
     function startBackendServer(callback) {
