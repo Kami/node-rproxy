@@ -5,5 +5,5 @@ else
 fi
 
 NODE_PATH=lib node_modules/whiskey/bin/whiskey \
-  --tests "tests/test-identity-provider-middleware.js tests/test-authentication-middleware.js tests/test-rate-limiting-middleware.js" \
+  --tests "$(find tests/ -type f -name "test-*.js" -print0 | tr "\0" " " | sed '$s/.$//')" \
   --dependencies ${config} --real-time --sequential
