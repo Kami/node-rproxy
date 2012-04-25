@@ -56,10 +56,13 @@ minimum time period you can rate limit on.
 
 ### Usage
 
+This middleware intercepts special usage headers returned by the backend and
+sends usage events to a remote [Atom Hopper](http://atomhopper.org/) instance.
+
 # TODO
 
 - Support for multiple targets and round robin balancing across them
 - Performance optimizations
-- Usage middleware
 - Stats middleware
 - Log middleware
+- Benchmark
