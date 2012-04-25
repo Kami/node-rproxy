@@ -4,6 +4,8 @@ node_js
   - 0.4
   - 0.6
 
+script: npm run-script test-travisci
+
 notifications:
   email:
     - tomaz+travisci@tomaz.me
