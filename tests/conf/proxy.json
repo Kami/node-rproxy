@@ -27,19 +27,19 @@
      "rate_limiting": {
         "depends": ["identity_provider"],
         "settings": {
-          "bucket_size": 8,
+          "bucket_size": 4,
           "limits": [
             {
               "method": "GET",
               "path_regex": "/.*",
               "limit": 10,
-              "period": 8
+              "period": 4
             },
             {
               "method": "GET",
               "path_regex": "/test/.*",
               "limit": 4,
-              "period": 8
+              "period": 4
             }
           ]
         }

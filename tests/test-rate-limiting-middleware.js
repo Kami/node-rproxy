@@ -48,25 +48,21 @@ exports.test_rate_limiting = function(test, assert) {
         assert.equal(res.headers['x-ratelimit-path-regex'], '/test/.*');
         assert.equal(res.headers['x-ratelimit-limit'], 4);
         assert.equal(res.headers['x-ratelimit-used'], 4);
-        assert.equal(res.headers['x-ratelimit-window'], '8 seconds');
+        assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
 
-        assert.match(JSON.parse(res.body).message, /Limit of 4 requests in 8 seconds for path .*? has been reached/i);
+        assert.match(JSON.parse(res.body).message, /Limit of 4 requests in 4 seconds for path .*? has been reached/i);
         callback();
       });
     },
 
     function issueRequestsPath2NotRateLimited(callback) {
-      async.forEach([7, 8, 9, 10], function(_, callback) {
+      async.forEach([6, 7, 8, 9, 10], function(_, callback) {
         request('http://127.0.0.1:9000/bar', 'GET', null, options, function(err, res) {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
           callback();
         });
-      },
-
-      function() {
-        setTimeout(callback, 1000);
-      });
+      }, callback);
     },
 
     function testPath2IsRateLimited(callback) {
@@ -77,18 +73,17 @@ exports.test_rate_limiting = function(test, assert) {
 
         assert.equal(res.headers['x-ratelimit-path-regex'], '/.*');
         assert.equal(res.headers['x-ratelimit-limit'], 10);
-        assert.equal(res.headers['x-ratelimit-used'], 10);
-        assert.equal(res.headers['x-ratelimit-window'], '8 seconds');
+        assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
 
-        assert.match(JSON.parse(res.body).message, /Limit of 10 requests in 8 seconds for path .*? has been reached/i);
+        assert.match(JSON.parse(res.body).message, /Limit of 10 requests in 4 seconds for path .*? has been reached/i);
         callback();
       });
     },
 
     function wait(callback) {
-      // Bucket size is 10 seconds, wait period + 2 seconds before checking
+      // Bucket size is 4 seconds, wait period + 2 seconds before checking
       // the limits again
-      setTimeout(callback, (10 * 1000));
+      setTimeout(callback, (6 * 1000));
     },
 
     function testPath1IsNotRateLimited(callback) {
@@ -100,7 +95,7 @@ exports.test_rate_limiting = function(test, assert) {
         assert.equal(res.headers['x-ratelimit-path-regex'], '/test/.*');
         assert.equal(res.headers['x-ratelimit-limit'], 4);
         assert.equal(res.headers['x-ratelimit-used'], 1);
-        assert.equal(res.headers['x-ratelimit-window'], '8 seconds');
+        assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
         callback();
       });
     },
@@ -122,7 +117,7 @@ exports.test_rate_limiting = function(test, assert) {
     }
 
     assert.equal(reqCountPath1, 5);
-    assert.equal(reqCountPath2, 5);
+    assert.ok([5, 6].indexOf(reqCountPath2) !== -1);
     test.finish();
   });
 };
