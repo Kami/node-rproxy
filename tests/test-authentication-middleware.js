@@ -3,6 +3,46 @@ var async = require('async');
 var request = require('util/request').request;
 var testUtil = require('util/test');
 
+exports.test_missing_tenant_id = function(test, assert) {
+  var options = {'return_response': true};
+
+  request('http://127.0.0.1:9000', 'GET', null, options, function(err, response) {
+    assert.ok(err);
+    assert.equal(err.statusCode, 400);
+    assert.match(JSON.parse(response.body).message, /Missing X-Tenant-Id header/i);
+    test.finish();
+  });
+};
+
+exports.test_missing_credentials_whitelisted_url = function(test, assert) {
+  var options = {'return_response': true}, server = null;
+
+  async.waterfall([
+    function startBackendServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(_server) {
+        server = _server;
+        callback();
+      });
+    },
+
+    function issueRequest(callback) {
+      request('http://127.0.0.1:9000/whitelisted', 'GET', null, options, function(err, response) {
+        assert.ok(err);
+        assert.equal(err.statusCode, 404);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    if (server) {
+      server.close();
+    }
+
+    test.finish();
+  });
+};
+
 exports.test_missing_auth_token = function(test, assert) {
   var options = {'return_response': true};
 

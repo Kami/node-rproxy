@@ -40,6 +40,7 @@ API](http://docs.openstack.org/incubation/identity-dev-guide/content/Overview-Ke
 authenticating a user. Authentication is be considered as successful if at
 least one URL returns a success. By default this array contains URL for US and
 UK Keystone server.
+* `whitelist` - A list of paths which don't require authentication
 
 ### Rate limiting
 

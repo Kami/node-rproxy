@@ -47,7 +47,8 @@
     "authentication": {
       "depends": ["identity_provider"],
       "settings": {
-        "urls": ["http://127.0.0.1:23542/v2.0"]
+        "urls": ["http://127.0.0.1:23542/v2.0"],
+        "whitelist": ["/whitelisted"]
       }
     },
     "usage": {
