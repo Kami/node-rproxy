@@ -46,23 +46,37 @@ UK Keystone server.
 This middleware provides flexible rate limiting based on the requested paths.
 
 * `bucket_size` - Size of a bucket in seconds. This value also specifies a
-minimum time period you can rate limit on.
+  minimum time period you can rate limit on.
 * `limits` - An array of limit objects. Each object has the following keys:
   * `method` - HTTP method of the limited path
-  * `path_regex` - Regular expression for the limited path
+  * `path_regex` - Regular expression for the rate limited path
   * `limit` - Request limit for this path
   * `period` - Period in seconds. This value can't be smaller than
   `bucket_size`
+* `view_path` - Special path which, when hit will sent current user limits to the
+  backend using a POST request
+* `view_backend_path` - Path on the backend where the users limits are sent to
+  when user hits `view_path` on the proxy.
 
 ### Usage
 
 This middleware intercepts special usage headers returned by the backend and
-sends usage events to a remote [Atom Hopper](http://atomhopper.org/) instance.
+sends usage events to an [Atom Hopper](http://atomhopper.org/) instance.
+
+* `url` - Atom Hopper instance URL
+* `service_name` - Name of the service
+* `region` - Service region or `global`
+* `datacenter` - Service datacenter or `global`
+
+## Special header names
+
+- X-RP-...
 
 # TODO
 
-- Support for multiple targets and round robin balancing across them
+- Benchmarking
 - Performance optimizations
 - Stats middleware
 - Log middleware
-- Benchmark
+- White list for authentication middleware
+- Integration guide
