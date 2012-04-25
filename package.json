@@ -1,13 +1,13 @@
 {
-  "name": "node-reverse-http-proxy",
-  "description": "A reverse proxy thing.",
+  "name": "rproxy",
+  "description": "A reverse proxy for RESTful services.",
   "version": "0.1.0",
   "author": "Tomaz Muraus <tomaz+npm@tomaz.me> http://www.tomaz.me",
-  "keywords": [ "proxy", "http proxy"],
-  "homepage": "https://github.com/Kami/node-reverse-http-proxy",
+  "keywords": [ "proxy", "http proxy", "reverse proxy"],
+  "homepage": "https://github.com/racker/node-rproxy",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Kami/node-reverse-http-proxy.git"
+    "url": "git:/.github.com/racker/node-rproxy.git"
   },
   "directories": {
     "lib": "./lib",
