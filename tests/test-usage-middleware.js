@@ -1,4 +1,5 @@
 var async = require('async');
+var express = require('express');
 
 var request = require('util/request').request;
 var misc = require('util/misc');
@@ -15,14 +16,15 @@ exports.test_usage_middleware = function(test, assert) {
   var entityData = {'id': 'a', 'name': 'test', 'ip': '127.0.0.1'},
       baseHeaders = {'Content-Type': 'application/json', 'X-Usage-Resource-Id': 'a',
                      'X-Usage-Resource-Name': 'entity', 'X-Usage-Resource-Data': JSON.stringify(entityData)},
-      options = {'return_response': true, 'expected_status_codes': [200]}, server = null, headerNames;
+      options = {'return_response': true, 'expected_status_codes': [200]}, server1 = null, server2 = null,
+      headerNames, atomHopperReqCount = 0;
 
   options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
-  headerNames = usageMiddleware.HEADER_KEY_NAMES.map(function(name) { return name.toLowerCase(); });
+  headerNames = usageMiddleware.HEADER_KEY_NAMES;
   async.waterfall([
     function startBackendServer(callback) {
-      testUtil.getTestHttpServer(9001, '127.0.0.1', function(_server) {
-        server = _server;
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(server) {
+        server1 = server;
 
         server.post('/entity/a', function(req, res) {
           var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'create'});
@@ -46,6 +48,32 @@ exports.test_usage_middleware = function(test, assert) {
           var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Data': '{"broken json}'});
           res.writeHead(201, headers);
           res.end();
+        });
+
+        callback();
+      });
+    },
+
+    function startMockAtomHopperServer(callback) {
+      testUtil.getTestHttpServer(9002, '127.0.0.1', function(server) {
+        server2 = server;
+
+        server.use(express.bodyParser());
+        server.post('/hopper', function(req, res) {
+          var buffer = '';
+          atomHopperReqCount++;
+
+          req.on('data', function(chunk) {
+            buffer += chunk;
+          });
+
+          req.on('end', function() {
+            // TODO: Better assert
+            assert.ok(buffer.length > 10);
+
+            res.writeHead(200, {});
+            res.end();
+          });
         });
 
         callback();
@@ -79,8 +107,10 @@ exports.test_usage_middleware = function(test, assert) {
       });
     },
 
-    function issueCreateRequest(callback) {
-      // Verify that headers have been stripped
+    function issueCreateRequestCorruptedDataFromBackend(callback) {
+      // Verify that headers have been stripped. This request shouldn't trigger
+      // a POST to Atom Hopper server, because it simulates backend returning
+      // corrupted data.
       request('http://127.0.0.1:9000/entity/corrupted', 'POST', null, options, function(err, res) {
         notInObject(assert, res.headers, headerNames);
         assert.equal(res.statusCode, 201);
@@ -90,10 +120,15 @@ exports.test_usage_middleware = function(test, assert) {
   ],
 
   function(err) {
-    if (server) {
-      server.close();
+    if (server1) {
+      server1.close();
     }
 
+    if (server2) {
+      server2.close();
+    }
+
+    assert.equal(atomHopperReqCount, 3);
     test.finish();
   });
 };
