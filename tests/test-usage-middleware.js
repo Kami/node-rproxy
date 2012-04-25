@@ -14,7 +14,7 @@ function notInObject(assert, obj, items) {
 exports.test_usage_middleware = function(test, assert) {
   var entityData = {'id': 'a', 'name': 'test', 'ip': '127.0.0.1'},
       baseHeaders = {'Content-Type': 'application/json', 'X-Usage-Resource-Id': 'a',
-                     'X-Usage-Resource-Data': JSON.stringify(entityData)},
+                     'X-Usage-Resource-Name': 'entity', 'X-Usage-Resource-Data': JSON.stringify(entityData)},
       options = {'return_response': true, 'expected_status_codes': [200]}, server = null, headerNames;
 
   options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
@@ -26,25 +26,25 @@ exports.test_usage_middleware = function(test, assert) {
 
         server.post('/entity/a', function(req, res) {
           var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'create'});
-          res.writeHead(201, {});
+          res.writeHead(201, headers);
           res.end();
         });
 
         server.put('/entity/a', function(req, res) {
           var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'put'});
-          res.writeHead(204, {});
+          res.writeHead(204, headers);
           res.end();
         });
 
         server.del('/entity/a', function(req, res) {
           var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'delete'});
-          res.writeHead(204, {});
+          res.writeHead(204, headers);
           res.end();
         });
 
         server.post('/entity/corrupted', function(req, res) {
           var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Data': '{"broken json}'});
-          res.writeHead(201, {});
+          res.writeHead(201, headers);
           res.end();
         });
 
