@@ -4,6 +4,10 @@ else
   config="tests/dependencies.json"
 fi
 
+if [ ! $TEST_FILES ]; then
+  TEST_FILES=$(find tests/ -type f -name "test-*.js" -print0 | tr "\0" " " | sed '$s/.$//')
+fi
+
 NODE_PATH=lib node_modules/whiskey/bin/whiskey \
-  --tests "$(find tests/ -type f -name "test-*.js" -print0 | tr "\0" " " | sed '$s/.$//')" \
+  --tests "${TEST_FILES}" \
   --dependencies ${config} --real-time --sequential
