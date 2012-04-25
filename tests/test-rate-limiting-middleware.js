@@ -44,6 +44,12 @@ exports['test_rate_limiting'] = function(test, assert) {
       request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
         assert.ok(err);
         assert.ok(err.statusCode, 400);
+
+        assert.equal(res.headers['x-ratelimit-path-regex'], '/test/.*');
+        assert.equal(res.headers['x-ratelimit-limit'], 4);
+        assert.equal(res.headers['x-ratelimit-used'], 4);
+        assert.equal(res.headers['x-ratelimit-window'], '8 seconds');
+
         assert.match(JSON.parse(res.body).message, /Limit of 4 requests in 8 seconds for path .*? has been reached/i);
         callback();
       });
@@ -64,6 +70,12 @@ exports['test_rate_limiting'] = function(test, assert) {
       request('http://127.0.0.1:9000/bar', 'GET', null, options, function(err, res) {
         assert.ok(err);
         assert.ok(err.statusCode, 400);
+
+        assert.equal(res.headers['x-ratelimit-path-regex'], '/.*');
+        assert.equal(res.headers['x-ratelimit-limit'], 10);
+        assert.equal(res.headers['x-ratelimit-used'], 10);
+        assert.equal(res.headers['x-ratelimit-window'], '8 seconds');
+
         assert.match(JSON.parse(res.body).message, /Limit of 10 requests in 8 seconds for path .*? has been reached/i);
         callback();
       });
@@ -75,11 +87,16 @@ exports['test_rate_limiting'] = function(test, assert) {
       setTimeout(callback, (10 * 1000));
     },
 
-    function testPath2IsNotRateLimited(callback) {
+    function testPath1IsNotRateLimited(callback) {
       // Limit shouldn't affect this request anymore
       request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
         assert.ok(!err);
         assert.equal(res.statusCode, 200);
+
+        assert.equal(res.headers['x-ratelimit-path-regex'], '/test/.*');
+        assert.equal(res.headers['x-ratelimit-limit'], 4);
+        assert.equal(res.headers['x-ratelimit-used'], 1);
+        assert.equal(res.headers['x-ratelimit-window'], '8 seconds');
         callback();
       });
     },
@@ -89,6 +106,7 @@ exports['test_rate_limiting'] = function(test, assert) {
       request('http://127.0.0.1:9000/bar', 'GET', null, options, function(err, res) {
         assert.ok(!err);
         assert.equal(res.statusCode, 200);
+
         callback();
       });
     }
