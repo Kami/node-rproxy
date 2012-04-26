@@ -12,7 +12,7 @@ A reverse proxy for RESTful services.
 
 # Concepts
 
-![](http://img205.imageshack.us/img205/9062/noderproxy.png)
+![](http://img38.imageshack.us/img38/2060/noderproxy1.png)
 
 ## Middleware
 
