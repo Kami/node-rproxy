@@ -12,6 +12,8 @@ A reverse proxy for RESTful services.
 
 # Concepts
 
+![](http://img38.imageshack.us/img38/2060/noderproxy1.png)
+
 ## Middleware
 
 Middleware is a node module which exposes a single method and acts on a request
