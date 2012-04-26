@@ -4,29 +4,89 @@ var request = require('util/request').request;
 var testUtil = require('util/test');
 
 exports.test_missing_tenant_id = function(test, assert) {
-  var options = {'return_response': true};
-
-  request('http://127.0.0.1:9000', 'GET', null, options, function(err, response) {
-    assert.ok(err);
-    assert.equal(err.statusCode, 400);
-    assert.match(JSON.parse(response.body).message, /Missing X-Tenant-Id header/i);
-    test.finish();
-  });
-};
-
-exports.test_missing_credentials_whitelisted_url = function(test, assert) {
-  var options = {'return_response': true}, server = null;
+  var server = null;
 
   async.waterfall([
-    function startBackendServer(callback) {
-      testUtil.getTestHttpServer(9001, '127.0.0.1', function(_server) {
+    function getTestHttpServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
         server = _server;
+
+        testUtil.setupErrorEchoHandlers(server);
         callback();
       });
     },
 
     function issueRequest(callback) {
-      request('http://127.0.0.1:9000/whitelisted', 'GET', null, options, function(err, response) {
+      var options = {'return_response': true};
+      request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
+        assert.ok(err);
+        assert.equal(err.statusCode, 400);
+        assert.match(res.body, /No tenant id provided/i);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    if (server) {
+      server.close();
+    }
+
+    test.finish();
+  });
+};
+
+exports.test_missing_auth_token = function(test, assert) {
+  var server = null;
+
+  async.waterfall([
+    function getTestHttpServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
+        server = _server;
+
+        testUtil.setupErrorEchoHandlers(server);
+        callback();
+      });
+    },
+
+    function issueRequest(callback) {
+      var options = {'return_response': true};
+
+      options.headers = {'X-Tenant-Id': '1234'};
+      request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
+        assert.ok(err);
+        assert.equal(err.statusCode, 400);
+        assert.match(res.body, /No authentication token provided/i);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    if (server) {
+      server.close();
+    }
+
+    test.finish();
+  });
+};
+
+exports.test_missing_credentials_whitelisted_url = function(test, assert) {
+  var server = null;
+
+  async.waterfall([
+    function getTestHttpServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
+        server = _server;
+
+        testUtil.setupErrorEchoHandlers(server);
+        callback();
+      });
+    },
+
+    function issueRequest(callback) {
+      var options = {'return_response': true};
+      request('http://127.0.0.1:9000/whitelisted', 'GET', null, options, function(err, res) {
         assert.ok(err);
         assert.equal(err.statusCode, 404);
         callback();
@@ -43,48 +103,63 @@ exports.test_missing_credentials_whitelisted_url = function(test, assert) {
   });
 };
 
-exports.test_missing_auth_token = function(test, assert) {
-  var options = {'return_response': true};
-
-  options.headers = {'X-Tenant-Id': '1234'};
-  request('http://127.0.0.1:9000', 'GET', null, options, function(err, response) {
-    assert.ok(err);
-    assert.equal(err.statusCode, 400);
-    assert.match(JSON.parse(response.body).message, /Missing X-Auth-Token header/i);
-    test.finish();
-  });
-};
-
 exports.test_invalid_auth_token = function(test, assert) {
-  var options = {'return_response': true};
+  var server = null;
 
-  options.headers = {'X-Tenant-Id': '1234', 'X-Auth-Token': 'invalid'};
-  request('http://127.0.0.1:9000', 'GET', null, options, function(err, response) {
-    assert.ok(err);
-    assert.equal(err.statusCode, 401);
-    assert.match(JSON.parse(response.body).message, /invalid or expired authentication token/i);
+  async.waterfall([
+    function getTestHttpServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
+        server = _server;
+
+        testUtil.setupErrorEchoHandlers(server);
+        callback();
+      });
+    },
+
+    function issueRequest(callback) {
+      var options = {'return_response': true};
+
+      options.headers = {'X-Tenant-Id': '1234', 'X-Auth-Token': 'invalid'};
+      request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
+        assert.ok(err);
+        assert.equal(err.statusCode, 401);
+        assert.match(res.body, /invalid or expired authentication token/i);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    if (server) {
+      server.close();
+    }
+
     test.finish();
   });
 };
 
 exports.test_valid_auth_token = function(test, assert) {
-  var options = {'return_response': true, 'expected_status_codes': [200]}, server = null, reqCount = 0;
+  var server = null, reqCount = 0;
 
   async.waterfall([
-    function startBackendServer(callback) {
-      testUtil.getTestHttpServer(9001, '127.0.0.1', function(_server) {
+    function getTestHttpServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
         server = _server;
+
         server.get('*', function(req, res) {
           reqCount++;
           res.writeHead(200, {});
           res.end();
         });
 
+        testUtil.setupErrorEchoHandlers(server);
         callback();
       });
     },
 
     function issueRequest(callback) {
+      var options = {'return_response': true, 'expected_status_codes': [200]};
+
       options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
       request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
         assert.ok(!err);
