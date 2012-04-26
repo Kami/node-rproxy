@@ -100,6 +100,10 @@ sends usage events to an [Atom Hopper](http://atomhopper.org/) instance.
 * `region` - Service region or `global`
 * `datacenter` - Service datacenter or `global`
 
+### Header remover
+
+This middleware removes headers with the specified prefix from the response.
+
 ## Special header names
 
 * X-RP-Error-Code

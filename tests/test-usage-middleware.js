@@ -8,7 +8,7 @@ var usageMiddleware = require('middleware/response/usage');
 
 function notInObject(assert, obj, items) {
   items.forEach(function(item) {
-    //assert.ok(!obj.hasOwnProperty(item));
+    assert.ok(!obj.hasOwnProperty(item));
   });
 }
 
