@@ -10,21 +10,40 @@ exports.test_rate_limiting = function(test, assert) {
   options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
   async.waterfall([
     function startBackendServer(callback) {
-      testUtil.getTestHttpServer(9001, '127.0.0.1', function(_server) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
         server = _server;
 
         server.get('/test/a', function(req, res) {
+          var code;
+
+          if (req.headers.hasOwnProperty('x-rp-error-code')) {
+            code = testUtil.PROXY_ERROR_CODE_TO_HTTP_CODE_MAP[req.headers['x-rp-error-code']];
+            res.writeHead(code, {});
+            res.end(req.headers['x-rp-error-message']);
+            return;
+          }
+
           reqCountPath1++;
           res.writeHead(200, {});
           res.end();
         });
 
         server.get('/bar', function(req, res) {
+          var code;
+
+          if (req.headers.hasOwnProperty('x-rp-error-code')) {
+            code = testUtil.PROXY_ERROR_CODE_TO_HTTP_CODE_MAP[req.headers['x-rp-error-code']];
+            res.writeHead(code, {});
+            res.end(req.headers['x-rp-error-message']);
+            return;
+          }
+
           reqCountPath2++;
           res.writeHead(200, {});
           res.end();
         });
 
+        testUtil.setupErrorEchoHandlers(server);
         callback();
       });
     },
@@ -50,7 +69,7 @@ exports.test_rate_limiting = function(test, assert) {
         assert.equal(res.headers['x-ratelimit-used'], 4);
         assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
 
-        assert.match(JSON.parse(res.body).message, /Limit of 4 requests in 4 seconds for path .*? has been reached/i);
+        assert.match(res.body, /Limit of 4 requests in 4 seconds for path .*? has been reached/i);
         callback();
       });
     },
@@ -75,7 +94,7 @@ exports.test_rate_limiting = function(test, assert) {
         assert.equal(res.headers['x-ratelimit-limit'], 10);
         assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
 
-        assert.match(JSON.parse(res.body).message, /Limit of 10 requests in 4 seconds for path .*? has been reached/i);
+        assert.match(res.body, /Limit of 10 requests in 4 seconds for path .*? has been reached/i);
         callback();
       });
     },
