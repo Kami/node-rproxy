@@ -53,6 +53,7 @@ exports.test_rate_limiting = function(test, assert) {
         request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
           assert.ok(!err);
           assert.equal(res.statusCode, 200);
+
           callback();
         });
       }, callback);

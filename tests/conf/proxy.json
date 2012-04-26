@@ -9,8 +9,10 @@
     "host": "localhost",
     "port": 9001,
     "secure": false,
-    "middleware_run_list": ["identity_provider", "rate_limiting",
-                            "authentication", "usage"]
+    "middleware_run_list": {
+      "request": ["identity_provider", "rate_limiting", "authentication"],
+      "response": ["usage", "rate_limiting"]
+    }
   },
 
   "database": {
@@ -25,39 +27,31 @@
   "middleware": {
     "identity_provider": {},
      "rate_limiting": {
-        "depends": ["identity_provider"],
-        "settings": {
-          "bucket_size": 4,
-          "limits": [
-            {
-              "method": "GET",
-              "path_regex": "/.*",
-              "limit": 10,
-              "period": 4
-            },
-            {
-              "method": "GET",
-              "path_regex": "/test/.*",
-              "limit": 4,
-              "period": 4
-            }
-          ]
-        }
+        "bucket_size": 4,
+        "limits": [
+          {
+            "method": "GET",
+            "path_regex": "/.*",
+            "limit": 10,
+            "period": 4
+          },
+          {
+            "method": "GET",
+            "path_regex": "/test/.*",
+            "limit": 4,
+            "period": 4
+          }
+        ]
     },
     "authentication": {
-      "depends": ["identity_provider"],
-      "settings": {
-        "urls": ["http://127.0.0.1:23542/v2.0"],
-        "whitelist": ["/whitelisted"]
-      }
+      "urls": ["http://127.0.0.1:23542/v2.0"],
+      "whitelist": ["/whitelisted"]
     },
     "usage": {
-      "settings": {
-        "url": "http://127.0.0.1:9002/hopper",
-        "service_name": "maas",
-        "region": "us",
-        "datacenter": "dfw2"
-      }
+      "url": "http://127.0.0.1:9002/hopper",
+      "service_name": "maas",
+      "region": "us",
+      "datacenter": "dfw2"
     }
   }
 }
