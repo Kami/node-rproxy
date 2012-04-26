@@ -24,6 +24,9 @@ or a response. There are two types of middleware:
   the backend before the responses is returned back to the user. It can for
   example strip or inject extra headers in the response.
 
+Note: Currently response middleware is only limited to modifying the response
+headers.
+
 # Requirements
 
 - Node.js
