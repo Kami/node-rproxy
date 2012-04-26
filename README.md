@@ -10,6 +10,20 @@ A reverse proxy for RESTful services.
   * Redis
   * Cassandra
 
+# Concepts
+
+## Middleware
+
+Middleware is a node module which exposes a single method and acts on a request
+or a response. There are two types of middleware:
+
+* request middleware - This type of middleware acts on a request before it's proxied to
+  the backend server. It can for example talk to a remote authentication server
+  or implement rate limiting.
+* response middleware - This type of middleware acts on a response returned by
+  the backend before the responses is returned back to the user. It can for
+  example strip or inject extra headers in the response.
+
 # Requirements
 
 - Node.js
