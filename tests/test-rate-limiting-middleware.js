@@ -44,6 +44,7 @@ exports.test_rate_limiting = function(test, assert) {
         });
 
         server.post('/rate_limits', function(req, res) {
+          assert.equal(req.url, '/rate_limits?foo=bar&bar=baz');
           var buffer = '';
 
           req.on('data', function(chunk) {
@@ -144,7 +145,7 @@ exports.test_rate_limiting = function(test, assert) {
     },
 
     function getLimits(callback) {
-      request('http://127.0.0.1:9000/limits', 'GET', null, options, function(err, res) {
+      request('http://127.0.0.1:9000/limits?foo=bar&bar=baz', 'GET', null, options, function(err, res) {
         var data = JSON.parse(res.body);
 
         assert.ok(!err);
