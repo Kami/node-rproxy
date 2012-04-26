@@ -43,6 +43,19 @@ exports.test_rate_limiting = function(test, assert) {
           res.end();
         });
 
+        server.post('/rate_limits', function(req, res) {
+          var buffer = '';
+
+          req.on('data', function(chunk) {
+            buffer += chunk;
+          });
+
+          req.on('end', function() {
+            res.writeHead(200, {'content-type': 'application/json'});
+            res.end(buffer);
+          });
+        });
+
         testUtil.setupErrorEchoHandlers(server);
         callback();
       });
@@ -126,6 +139,23 @@ exports.test_rate_limiting = function(test, assert) {
         assert.ok(!err);
         assert.equal(res.statusCode, 200);
 
+        callback();
+      });
+    },
+
+    function getLimits(callback) {
+      request('http://127.0.0.1:9000/limits', 'GET', null, options, function(err, res) {
+        var data = JSON.parse(res.body);
+
+        assert.ok(!err);
+        assert.equal(res.statusCode, 200);
+        assert.equal(data.length, 2); // 2 rules
+
+        assert.equal(data[0].method, 'GET');
+        assert.equal(data[0].path_regex, '/.*');
+        assert.equal(data[0].limit, 10);
+        assert.equal(data[0].used, 2);
+        assert.equal(data[0].period, 4);
         callback();
       });
     }
