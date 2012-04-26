@@ -24,7 +24,7 @@ exports.test_usage_middleware = function(test, assert) {
   headerNames = usageMiddleware.HEADER_KEY_NAMES;
   async.waterfall([
     function startBackendServer(callback) {
-      testUtil.getTestHttpServer(9001, '127.0.0.1', function(server) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, server) {
         server1 = server;
 
         server.post('/entity/a', function(req, res) {
@@ -56,7 +56,7 @@ exports.test_usage_middleware = function(test, assert) {
     },
 
     function startMockAtomHopperServer(callback) {
-      testUtil.getTestHttpServer(9002, '127.0.0.1', function(server) {
+      testUtil.getTestHttpServer(9002, '127.0.0.1', function(err, server) {
         server2 = server;
 
         server.use(express.bodyParser());
