@@ -41,7 +41,9 @@
             "limit": 4,
             "period": 4
           }
-        ]
+        ],
+        "usage_proxy_path": "/limits",
+        "usage_target_path": "/rate_limits"
     },
     "authentication": {
       "urls": ["http://127.0.0.1:23542/v2.0"],
