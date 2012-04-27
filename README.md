@@ -50,6 +50,8 @@ or from the URL and puts it on the request object.
 
 This middleware authenticates a user against the [Keystone
 API](http://docs.openstack.org/incubation/identity-dev-guide/content/Overview-Keystone-API-d1e62.html).
+It expects authentication token to be provided in the header with the name
+`X-Auth-Token` or in the query string with the name `x-auth-token`.
 
 ### Settings
 
