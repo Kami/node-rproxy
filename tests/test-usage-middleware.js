@@ -18,9 +18,9 @@ exports.test_usage_middleware = function(test, assert) {
       headerNames, atomHopperReqCount = 0, baseHeaders, ts = misc.getUnixTimestamp();
 
   options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
-  baseHeaders = {'Content-Type': 'application/json', 'X-Usage-Resource-Id': 'a',
-                 'X-Usage-Resource-Name': 'entity', 'X-Usage-Resource-Timestamp': ts,
-                 'X-Usage-Resource-Data': JSON.stringify(entityData)};
+  baseHeaders = {'Content-Type': 'application/json', 'X-RP-Usage-Resource-Id': 'a',
+                 'X-RP-Usage-Resource-Name': 'entity', 'X-RP-Usage-Resource-Timestamp': ts,
+                 'X-RP-Usage-Resource-Data': JSON.stringify(entityData)};
   headerNames = usageMiddleware.HEADER_KEY_NAMES;
   async.waterfall([
     function startBackendServer(callback) {
@@ -28,25 +28,25 @@ exports.test_usage_middleware = function(test, assert) {
         server1 = server;
 
         server.post('/entity/a', function(req, res) {
-          var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'create'});
+          var headers = misc.merge(baseHeaders, {'X-RP-Usage-Resource-Action': 'create'});
           res.writeHead(201, headers);
           res.end();
         });
 
         server.put('/entity/a', function(req, res) {
-          var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'put'});
+          var headers = misc.merge(baseHeaders, {'X-RP-Usage-Resource-Action': 'put'});
           res.writeHead(204, headers);
           res.end();
         });
 
         server.del('/entity/a', function(req, res) {
-          var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Action': 'delete'});
+          var headers = misc.merge(baseHeaders, {'X-RP-Usage-Resource-Action': 'delete'});
           res.writeHead(204, headers);
           res.end();
         });
 
         server.post('/entity/corrupted', function(req, res) {
-          var headers = misc.merge(baseHeaders, {'X-Usage-Resource-Data': '{"broken json}'});
+          var headers = misc.merge(baseHeaders, {'X-RP-Usage-Resource-Data': '{"broken json}'});
           res.writeHead(201, headers);
           res.end();
         });

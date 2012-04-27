@@ -14,7 +14,7 @@ exports.test_header_remover_middleware = function(test, assert) {
         server = _server;
 
         server.get('/test', function(req, res) {
-          var headers = {'x-rp-1': 'test', 'x-rp-2': 'test2', 'x-something': 'test'};
+          var headers = {'x-rp-1': 'test', 'x-rp-2': 'test2', 'x-something': 'test', 'x-test-bar': 'foo'};
           res.writeHead(200, headers);
           res.end();
         });
@@ -30,6 +30,7 @@ exports.test_header_remover_middleware = function(test, assert) {
         assert.equal(res.headers['x-something'], 'test');
         assert.ok(!res.headers.hasOwnProperty('x-rp-1'));
         assert.ok(!res.headers.hasOwnProperty('x-rp-2'));
+        assert.ok(!res.headers.hasOwnProperty('x-test-bar'));
         assert.equal(res.statusCode, 200);
         callback();
       });

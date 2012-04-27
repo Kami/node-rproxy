@@ -56,7 +56,7 @@
       "datacenter": "dfw2"
     },
     "header_remover": {
-      "prefixes": ["x-usage", "x-rp"]
+      "prefixes": ["x-rp", "x-test"]
     }
   }
 }
