@@ -147,6 +147,8 @@ exports.test_valid_auth_token = function(test, assert) {
         server = _server;
 
         server.get('*', function(req, res) {
+          assert.ok(!req.headers.hasOwnProperty('x-rp-error-code'));
+
           reqCount++;
           res.writeHead(200, {});
           res.end();
@@ -177,6 +179,17 @@ exports.test_valid_auth_token = function(test, assert) {
         assert.equal(res.statusCode, 200);
         callback();
       });
+    },
+
+    function issueRequestTokenInQueryString(callback) {
+      var options = {'return_response': true, 'expected_status_codes': [200]};
+
+      options.headers = {'X-Tenant-Id': '7777'};
+      request('http://127.0.0.1:9000/?x-auth-token=dev', 'GET', null, options, function(err, res) {
+        assert.ok(!err);
+        assert.equal(res.statusCode, 200);
+        callback();
+      });
     }
   ],
 
@@ -185,7 +198,7 @@ exports.test_valid_auth_token = function(test, assert) {
       server.close();
     }
 
-    assert.equal(reqCount, 2);
+    assert.equal(reqCount, 3);
     test.finish();
   });
 };
