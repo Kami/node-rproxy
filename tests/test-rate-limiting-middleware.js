@@ -2,6 +2,7 @@ var async = require('async');
 
 var request = require('util/request').request;
 var testUtil = require('util/test');
+var misc = require('util/misc');
 
 exports.test_rate_limiting = function(test, assert) {
   var options = {'return_response': true, 'expected_status_codes': [200]}, server = null,
@@ -76,6 +77,7 @@ exports.test_rate_limiting = function(test, assert) {
     function testPath1IsRateLimited(callback) {
       // After 4 requests, path 1 should be rate limited
       request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
+        var now = misc.getUnixTimestamp();
         assert.ok(err);
         assert.ok(err.statusCode, 400);
 
@@ -83,6 +85,7 @@ exports.test_rate_limiting = function(test, assert) {
         assert.equal(res.headers['x-ratelimit-limit'], 4);
         assert.equal(res.headers['x-ratelimit-used'], 4);
         assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
+        assert.ok(res.headers['reply-after'] > now);
 
         assert.match(res.body, /Limit of 4 requests in 4 seconds for path .*? has been reached/i);
         callback();
