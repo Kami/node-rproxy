@@ -157,11 +157,22 @@ exports.test_valid_auth_token = function(test, assert) {
       });
     },
 
-    function issueRequest(callback) {
+    function issueRequestTenantIdInHeader(callback) {
       var options = {'return_response': true, 'expected_status_codes': [200]};
 
       options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
       request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
+        assert.ok(!err);
+        assert.equal(res.statusCode, 200);
+        callback();
+      });
+    },
+
+    function issueRequestTenantIdInUrl(callback) {
+      var options = {'return_response': true, 'expected_status_codes': [200]};
+
+      options.headers = {'X-Auth-Token': 'dev'};
+      request('http://127.0.0.1:9000/7777/bar', 'GET', null, options, function(err, res) {
         assert.ok(!err);
         assert.equal(res.statusCode, 200);
         callback();
@@ -174,7 +185,7 @@ exports.test_valid_auth_token = function(test, assert) {
       server.close();
     }
 
-    assert.equal(reqCount, 1);
+    assert.equal(reqCount, 2);
     test.finish();
   });
 };
