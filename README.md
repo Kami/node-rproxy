@@ -53,6 +53,9 @@ API](http://docs.openstack.org/incubation/identity-dev-guide/content/Overview-Ke
 It expects authentication token to be provided in the header with the name
 `X-Auth-Token` or in the query string with the name `x-auth-token`.
 
+Unless `?skip-auth-cache` query string is provided, token is stored in the cache
+until it expires.
+
 ### Settings
 
 * `username` - admin username for the Keystone auth server
