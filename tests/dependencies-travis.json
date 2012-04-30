@@ -6,7 +6,7 @@
   },
 
   "proxy_server": {
-    "cmd": ["bin/server", "-c", "tests/conf/proxy.json"],
+    "cmd": ["bin/server", "-c", "tests/conf/proxy-redis.json"],
     "cwd": ["__dirname", ".."],
     "log_file": "test-proxy.log",
     "wait_for": "socket",
