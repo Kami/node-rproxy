@@ -49,8 +49,6 @@
   "scripts": {
     "lint": "./scripts/lint.sh",
     "test": "./scripts/tests.sh",
-    "test-travisci-redis": "DB_BACKEND=redis TRAVISCI=1 ./scripts/tests.sh",
-    "test-travisci-cassandra": "DB_BACKEND=cassandra TRAVISCI=1 ./scripts/tests.sh",
     "benchmark-env": "NODE_PATH=lib node_modules/whiskey/bin/whiskey-process-runner --config tests/dependencies-benchmark.json --run"
   }
 }

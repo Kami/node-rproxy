@@ -2,7 +2,7 @@ if [ ! $DB_BACKEND ]; then
   DB_BACKEND="redis"
 fi
 
-if [ $TRAVISCI ]; then
+if [ $TRAVIS ]; then
   config="tests/dependencies-travis-${DB_BACKEND}.json"
 else
   config="tests/dependencies-${DB_BACKEND}.json"
