@@ -18,7 +18,7 @@
   },
 
   "proxy_server": {
-    "cmd": ["bin/server", "-c", "tests/conf/proxy.json"],
+    "cmd": ["bin/server", "-c", "tests/conf/proxy-redis.json"],
     "cwd": ["__dirname", ".."],
     "depends": ["redis"],
     "log_file": "test-proxy.log",
