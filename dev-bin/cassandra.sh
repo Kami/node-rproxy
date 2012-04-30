@@ -4,10 +4,10 @@ basedir=`dirname $0`
 
 export CASSANDRA_CONF=$basedir/../tests/conf/
 
-if [ ! $CASS_HOME ]; then
-    CASS_HOME="/opt/cassandra"
+if [ ! $CASSANDRA_HOME ]; then
+    CASSANDRA_HOME="/opt/cassandra"
 fi
 
 
 rm -rf /tmp/cass/*
-exec $CASS_HOME/bin/cassandra -f
+exec $CASSANDRA_HOME/bin/cassandra -f
