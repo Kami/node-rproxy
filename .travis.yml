@@ -9,7 +9,7 @@ env:
 
 before_install:
   - sudo service cassandra start
-  - sleep 3
+  - sleep 5
 
 before_script: npm run-script lint
 script: npm run-script test
