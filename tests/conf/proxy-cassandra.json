@@ -18,7 +18,7 @@
   "database": {
     "backend": "cassandra",
     "settings": {
-      "hosts": ["127.0.0.1:19170"],
+      "hosts": ["127.0.0.1:9160"],
       "keyspace": "rproxy",
       "read_consistency": "ONE",
       "write_consistency": "ONE"
