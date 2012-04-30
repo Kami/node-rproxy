@@ -23,6 +23,7 @@
     "logmagic": "= 0.1.4",
     "http-proxy": "= 0.8.0",
     "redis": "= 0.7.1",
+    "cassandra-client": "= 0.9.1",
     "optimist": "= 0.3.1",
     "sprintf": "= 0.1.1",
     "elementtree": "0.1.1",
