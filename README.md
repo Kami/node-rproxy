@@ -71,6 +71,7 @@ UK Keystone server.
 * `NR-1000` - missing `X-Tenant-Id` header
 * `NR-1001` - missing `X-Auth-Token` header
 * `NR-1002` - invalid or expired auth token
+* `NR-5000` - something unexpected has happened
 
 ## Rate limiting
 
