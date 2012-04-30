@@ -116,6 +116,26 @@ This middleware removes headers with the specified prefix from the response.
 * X-RP-Error-Code
 * X-RP-Error-Message
 
+# Running lint and tests
+
+By default tests are automatically run on every commit on [Travis-ci](http://travis-ci.org).
+You can view the build status at [http://travis-ci.org/#!/racker/node-rproxy](http://travis-ci.org/#!/racker/node-rproxy).
+
+If you want to run them locally you need to have either Redis or Cassandra (or
+both) installed.
+
+## Running lint
+
+`npm run-script lint`
+
+## Running tests with Redis backend
+
+`DB_BACKEND=redis REDIS_HOME=<path to the directory containg redis-server binary> npm run-script test`
+
+## Running tests with Cassandra backend
+
+`DB_BACKEND=cassandra CASSANDRA_HOME=<path to the directory containg cassandra binary> npm run-script test`
+
 # TODO
 
 - Benchmarking
