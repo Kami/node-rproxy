@@ -3,8 +3,12 @@ language: node_js
 node_js:
   - 0.6
 
+before_install:
+  - sudo service cassandra start
+  - sleep 3
+
 before_script: npm run-script lint
-script: npm run-script test-travisci
+script: npm run-script test-travisci-redis && npm run-script test-travisci-cassandra
 
 notifications:
   email:

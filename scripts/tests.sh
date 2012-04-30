@@ -3,7 +3,7 @@ if [ ! $DB_BACKEND ]; then
 fi
 
 if [ $TRAVISCI ]; then
-  config="tests/dependencies-travis.json"
+  config="tests/dependencies-travis-${DB_BACKEND}.json"
 else
   config="tests/dependencies-${DB_BACKEND}.json"
 fi
