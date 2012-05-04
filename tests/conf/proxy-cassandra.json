@@ -5,6 +5,13 @@
     "secure": false
   },
 
+  "admin_api": {
+    "host": "localhost",
+    "port": 8001,
+    "secure": false,
+    "key": "abcd"
+  },
+
   "target": {
     "host": "localhost",
     "port": 9001,
