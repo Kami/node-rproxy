@@ -29,14 +29,21 @@ catch (err) {
 
 log.debugf('Using config ${config}', {'config': argv.c});
 
-async.series([
+async.waterfall([
   function runProxyServer(callback) {
     var server = new ReverseProxyServer(config);
-    server.run(callback);
+    server.run(function(err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      callback(null, server);
+    });
   },
 
-  function runAdminApiServer(callback) {
-    var server = new AdminAPIServer(config);
+  function runAdminApiServer(proxyServer, callback) {
+    var server = new AdminAPIServer(proxyServer, config);
     server.run(callback);
   }
 ],
