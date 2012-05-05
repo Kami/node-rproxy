@@ -31,6 +31,7 @@
     "metrics-ck": "0.0.1"
   },
   "devDependencies": {
+     "hiredis": "0.1.14",
      "whiskey": "0.6.8",
      "jshint": "0.5.9",
      "node-dev": "0.2.2",
