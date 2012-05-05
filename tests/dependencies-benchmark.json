@@ -29,7 +29,7 @@
   },
 
   "proxy_server": {
-    "cmd": ["node", "--prof", "bin/server", "-c", "tests/conf/proxy-benchmark.json"],
+    "cmd": ["node", "--prof", "bin/server", "-c", "tests/conf/proxy-benchmark.json", "--loglevel", "ERR"],
     "cwd": ["__dirname", ".."],
     "depends": ["redis", "backend_server"],
     "log_file": "test-proxy.log",
