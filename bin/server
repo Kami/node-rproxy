@@ -12,7 +12,7 @@ var argv = require('optimist')
   .demand(['c'])
   .argv;
 
-var ReverseProxyServer = require('../lib/server').ReverseProxyServer;
+var ReverseProxyServer = require('../lib/proxy/server').ReverseProxyServer;
 var AdminAPIServer = require('../lib/admin_api/server').AdminAPIServer;
 var config = require('../lib/util/config');
 
