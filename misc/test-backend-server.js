@@ -2,6 +2,7 @@
 
 var express = require('express');
 var sprintf = require('sprintf').sprintf;
+var Cluster = require('cluster2');
 
 var argv = require('optimist')
   .usage('Usage: $0 -h [host] -p [port]')
@@ -15,15 +16,18 @@ function handleRequest(req, res) {
 }
 
 function run() {
-  var server = express.createServer();
+  var server = express.createServer(), cluster;
 
   server.get('*', handleRequest);
   server.post('*', handleRequest);
   server.put('*', handleRequest);
   server.del('*', handleRequest);
 
-  server.listen(argv.p, argv.h);
-  console.log('Server listening on %s:%s', argv.h, argv.p);
+  cluster = new Cluster({'port': argv.p, 'monPort': 3002});
+  cluster.listen(function(callback) {
+    callback(server);
+    console.log('Server listening on %s:%s', argv.h, argv.p);
+  });
 }
 
 run();
