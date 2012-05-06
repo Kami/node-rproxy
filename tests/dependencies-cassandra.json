@@ -38,6 +38,7 @@
       "host": "127.0.0.1",
       "port": 9000
     },
-    "timeout": 10000
+    "timeout": 10000,
+    "kill_script": "tests/kill_proxy.sh"
   }
 }
