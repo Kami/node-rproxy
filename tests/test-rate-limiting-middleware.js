@@ -63,6 +63,11 @@ exports.test_rate_limiting = function(test, assert) {
       });
     },
 
+    function wait(callback) {
+      // wait for all the existing rate limits to expire
+      setTimeout(callback, 5000);
+    },
+
     function issueRequestsPath1NotRateLimited(callback) {
       async.forEach([1, 2, 3, 4], function(_, callback) {
         request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
