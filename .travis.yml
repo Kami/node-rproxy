@@ -3,8 +3,16 @@ language: node_js
 node_js:
   - 0.6
 
+env:
+  - DB_BACKEND=redis
+  - DB_BACKEND=cassandra
+
+before_install:
+  - sudo service cassandra start
+  - sleep 5
+
 before_script: npm run-script lint
-script: npm run-script test-travisci
+script: npm run-script test
 
 notifications:
   email:

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var async = require('async');
 var logmagic = require('logmagic');
 var log = logmagic.local('bin.server');
 var argv = require('optimist')
@@ -11,7 +12,8 @@ var argv = require('optimist')
   .demand(['c'])
   .argv;
 
-var ReverseProxyServer = require('../lib/server').ReverseProxyServer;
+var ReverseProxyServer = require('../lib/proxy/server').ReverseProxyServer;
+var AdminAPIServer = require('../lib/admin_api/server').AdminAPIServer;
 var config = require('../lib/util/config');
 
 // Set up logger
@@ -26,8 +28,27 @@ catch (err) {
 }
 
 log.debugf('Using config ${config}', {'config': argv.c});
-var server = new ReverseProxyServer(config);
-server.run(function(err) {
+
+async.waterfall([
+  function runProxyServer(callback) {
+    var server = new ReverseProxyServer(config);
+    server.run(function(err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      callback(null, server);
+    });
+  },
+
+  function runAdminApiServer(proxyServer, callback) {
+    var server = new AdminAPIServer(proxyServer, config);
+    server.run(callback);
+  }
+],
+
+function(err) {
   if (err) {
     process.exit(1);
   }

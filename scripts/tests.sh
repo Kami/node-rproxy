@@ -1,7 +1,11 @@
-if [ $TRAVISCI ]; then
-  config="tests/dependencies-travis.json"
+if [ ! $DB_BACKEND ]; then
+  DB_BACKEND="redis"
+fi
+
+if [ $TRAVIS ]; then
+  config="tests/dependencies-travis-${DB_BACKEND}.json"
 else
-  config="tests/dependencies.json"
+  config="tests/dependencies-${DB_BACKEND}.json"
 fi
 
 if [ ! $TEST_FILES ]; then

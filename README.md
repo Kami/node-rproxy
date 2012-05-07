@@ -39,6 +39,28 @@ headers.
 Configuration is stored in a JSON format in a file. Example configuration can
 be found in `example/config.json`.
 
+## Reverse proxy configuration ("server" attribute)
+
+* `host` - listen address for the reverse proxy server
+* `port` - listen port for the reverse proxy server
+* `workers` - number of workers processes to use. Defaults to the number of
+  available CPUs.
+
+## Admin API configuration ("admin_api" attribute)
+
+* `host` - listen address for the admin API server
+* `port` - listen port for the admin API server
+* `key` - API key used for authentication which must be provided in the
+  `x-api-key` header.
+
+# Backend a.k.a. proxy target configuration ("target" attribute)
+
+* `host` - listen address for the proxy target
+* `port` - listen port for the proxy target
+* `middleware_run_list` - an object with two keys:
+  * `request` - an array of middleware to run for every request
+  * `response` - an array of middleware to run for every response
+
 # Middleware configuration options
 
 ## Identity provider
@@ -71,6 +93,7 @@ UK Keystone server.
 * `NR-1000` - missing `X-Tenant-Id` header
 * `NR-1001` - missing `X-Auth-Token` header
 * `NR-1002` - invalid or expired auth token
+* `NR-5000` - something unexpected has happened
 
 ## Rate limiting
 
@@ -116,10 +139,28 @@ This middleware removes headers with the specified prefix from the response.
 * X-RP-Error-Code
 * X-RP-Error-Message
 
+# Running lint and tests
+
+By default tests are automatically run on every commit on [Travis-ci](http://travis-ci.org).
+You can view the build status at [http://travis-ci.org/#!/racker/node-rproxy](http://travis-ci.org/#!/racker/node-rproxy).
+
+If you want to run them locally you need to have either Redis or Cassandra (or
+both) installed.
+
+## Running lint
+
+`npm run-script lint`
+
+## Running tests with Redis backend
+
+`DB_BACKEND=redis REDIS_HOME=<path to the directory containg redis-server binary> npm run-script test`
+
+## Running tests with Cassandra backend
+
+`DB_BACKEND=cassandra CASSANDRA_HOME=<path to the directory containg cassandra binary> npm run-script test`
+
 # TODO
 
-- Benchmarking
 - Performance optimizations
-- Stats middleware
 - Log middleware
 - Integration guide
