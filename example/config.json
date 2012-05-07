@@ -1,17 +1,26 @@
 {
-
   "server": {
     "host": "localhost",
-    "port": 8000,
-    "secure": false
+    "port": 9000,
+    "secure": false,
+    "workers": 2
+  },
+
+  "admin_api": {
+    "host": "localhost",
+    "port": 8001,
+    "secure": false,
+    "key": "abcd"
   },
 
   "target": {
     "host": "localhost",
-    "port": 8787,
+    "port": 9001,
     "secure": false,
-    "middleware_run_list": ["identity_provider", "rate_limiting",
-                            "authentication"]
+    "middleware_run_list": {
+      "request": ["identity_provider", "rate_limiting", "authentication"],
+      "response": ["usage", "rate_limiting", "header_remover"]
+    }
   },
 
   "database": {
@@ -26,33 +35,36 @@
   "middleware": {
     "identity_provider": {},
      "rate_limiting": {
-        "depends": ["identity_provider"],
-        "settings": {
-          "bucket_size": 10,
-          "limits": [
-            {
-              "method": "GET",
-              "path_regex": "/.*?",
-              "limit": 10,
-              "period": 60
-            },
-            {
-              "method": "GET",
-              "path_regex": "/test/.*?",
-              "limit": 5,
-              "period": 60
-            }
-          ]
-        }
+        "bucket_size": 4,
+        "limits": [
+          {
+            "method": "GET",
+            "path_regex": "/.*",
+            "limit": 10,
+            "period": 4
+          },
+          {
+            "method": "GET",
+            "path_regex": "/test/.*",
+            "limit": 4,
+            "period": 4
+          }
+        ],
+        "usage_proxy_path": "/limits",
+        "usage_target_path": "/rate_limits"
     },
     "authentication": {
-      "depends": ["identity_provider"],
-      "settings": {
-        "username": null,
-        "password": null,
         "urls": ["https://auth.api.rackspacecloud.com/v2.0",
                  "https://lon.auth.api.rackspacecloud.com/v2.0"]
-      }
+    },
+    "usage": {
+      "url": "http://127.0.0.1:9002/hopper",
+      "service_name": "maas",
+      "region": "us",
+      "datacenter": "dfw2"
+    },
+    "header_remover": {
+      "prefixes": ["x-rp"]
     }
   }
 }
