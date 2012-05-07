@@ -39,6 +39,28 @@ headers.
 Configuration is stored in a JSON format in a file. Example configuration can
 be found in `example/config.json`.
 
+## Reverse proxy configuration ("server" attribute)
+
+* `host` - listen address for the reverse proxy server
+* `port` - listen port for the reverse proxy server
+* `workers` - number of workers processes to use. Defaults to the number of
+  available CPUs.
+
+## Admin API configuration ("admin_api" attribute)
+
+* `host` - listen address for the admin API server
+* `port` - listen port for the admin API server
+* `key` - API key used for authentication which must be provided in the
+  `x-api-key` header.
+
+# Backend a.k.a. proxy target configuration ("target" attribute)
+
+* `host` - listen address for the proxy target
+* `port` - listen port for the proxy target
+* `middleware_run_list` - an object with two keys:
+  * `request` - an array of middleware to run for every request
+  * `response` - an array of middleware to run for every response
+
 # Middleware configuration options
 
 ## Identity provider
