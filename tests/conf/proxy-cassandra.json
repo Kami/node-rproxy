@@ -2,7 +2,8 @@
   "server": {
     "host": "localhost",
     "port": 9000,
-    "secure": false
+    "secure": false,
+    "workers": 2
   },
 
   "admin_api": {
