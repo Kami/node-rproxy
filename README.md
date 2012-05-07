@@ -161,9 +161,6 @@ both) installed.
 
 # TODO
 
-- Admin API
-- Benchmarking
 - Performance optimizations
-- Stats middleware
 - Log middleware
 - Integration guide
