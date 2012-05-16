@@ -65,8 +65,13 @@ be found in `example/config.json`.
 
 ## Identity provider
 
-This middleware parses a user tenant id from the header called `X-Tenant-Id`
-or from the URL and puts it on the request object.
+This middleware parses a user tenant id from the URL or a header called `X-Tenant-Id`
+and puts it on the request object.
+
+### Settings
+
+* `tenant_id_regex` - regular expression which is used for parsing tenant id
+  from the request URL. If not provided it defaults to `/\/(\d+)\/?/`.
 
 ## Authentication
 
