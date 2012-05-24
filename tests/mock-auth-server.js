@@ -5,7 +5,7 @@ var express = require('express');
 
 var sprintf = require('sprintf').sprintf;
 
-var misc = require('util/misc');
+var misc = require('rackspace-shared-utils/lib/misc');
 var log = require('logmagic').local('mock-auth-server');
 
 /**
