@@ -228,3 +228,31 @@ exports.test_rate_limiting = function(test, assert) {
     test.finish();
   });
 };
+
+exports.test_rate_limiting_admin_api = function(test, assert) {
+  var options = {'return_response': true, 'expected_status_codes': [200]};
+  async.waterfall([
+    function testInvalidApiKey(callback) {
+      options.headers = {'X-Api-Key': 'invalid'};
+      request('http://127.0.0.1:8001/v1.0/limits', 'POST', null, options, function(err, res) {
+        assert.ok(err);
+        assert.ok(err.statusCode, 401);
+        callback();
+      });
+    },
+
+    function testMissingParameters(callback) {
+      options.headers = {'X-Api-Key': 'abcd'};
+      request('http://127.0.0.1:8001/v1.0/limits', 'POST', null, options, function(err, res) {
+        assert.ok(err);
+        assert.ok(err.statusCode, 400);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    assert.ifError(err);
+    test.finish();
+  });
+};
