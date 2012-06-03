@@ -14,9 +14,6 @@
     "example": "./example",
     "bin": "./bin"
   },
-  "scripts": {
-    "test": "make test"
-  },
   "dependencies": {
     "async": "= 0.1.18",
     "sprintf": "= 0.1.1",
