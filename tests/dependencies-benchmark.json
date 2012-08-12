@@ -17,16 +17,28 @@
     "log_file": "test-mock-auth-api-server.log"
   },
 
-  "proxy_server": {
-    "cmd": ["bin/server", "-c", "tests/conf/proxy.json"],
+  "backend_server": {
+    "cmd": ["misc/test-backend-server.js", "-p", "8080"],
     "cwd": ["__dirname", ".."],
-    "depends": ["redis"],
+    "log_file": "test-backend-server.log",
+    "wait_for_options": {
+      "host": "127.0.0.1",
+      "port": 8080
+    },
+    "timeout": 5000
+  },
+
+  "proxy_server": {
+    "cmd": ["node", "--prof", "bin/server", "-c", "tests/conf/proxy-benchmark.json", "--loglevel", "ERR"],
+    "cwd": ["__dirname", ".."],
+    "depends": ["redis", "backend_server"],
     "log_file": "test-proxy.log",
     "wait_for": "socket",
     "wait_for_options": {
       "host": "127.0.0.1",
       "port": 9000
     },
-    "timeout": 10000
+    "timeout": 10000,
+    "kill_script": "tests/kill_proxy.sh"
   }
 }

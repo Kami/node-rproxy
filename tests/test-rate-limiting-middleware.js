@@ -1,3 +1,5 @@
+var querystring = require('querystring');
+
 var async = require('async');
 
 var request = require('util/request').request;
@@ -6,6 +8,7 @@ var misc = require('util/misc');
 
 exports.test_rate_limiting = function(test, assert) {
   var options = {'return_response': true, 'expected_status_codes': [200]}, server = null,
+      adminOptions = {'return_response': true, 'expected_status_codes': [200]},
       reqCountPath1 = 0, reqCountPath2 = 0;
 
   options.headers = {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'};
@@ -61,6 +64,11 @@ exports.test_rate_limiting = function(test, assert) {
         testUtil.setupErrorEchoHandlers(server);
         callback();
       });
+    },
+
+    function wait(callback) {
+      // wait for all the existing rate limits to expire
+      setTimeout(callback, 5000);
     },
 
     function issueRequestsPath1NotRateLimited(callback) {
@@ -162,6 +170,51 @@ exports.test_rate_limiting = function(test, assert) {
         assert.equal(data[0].period, 4);
         callback();
       });
+    },
+
+    function useAdminApiToOverrideUserLimits(callback) {
+      var url, qs;
+
+      url = 'http://127.0.0.1:8001/v1.0/limits';
+      qs = {'userId': '02222', 'pathRegex': '/test/.*', 'value': 8};
+      url += '?' + querystring.stringify(qs);
+
+      adminOptions.headers = {'X-Api-Key': 'abcd'};
+      request(url, 'POST', null, adminOptions, function(err, res) {
+        assert.ok(!err);
+        assert.equal(res.statusCode, 200);
+        callback();
+      });
+    },
+
+  function issueRequestsPath1NotRateLimited(callback) {
+    options.headers = {'X-Tenant-Id': '02222', 'X-Auth-Token': 'never-cache-this'};
+      async.forEach([1, 2, 3, 4, 5, 6, 7, 8], function(_, callback) {
+        request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
+          assert.ok(!err);
+          assert.equal(res.statusCode, 200);
+
+          callback();
+        });
+      }, callback);
+    },
+
+    function testPath1IsRateLimited(callback) {
+      // After 9 requests, path 1 should be rate limited
+      request('http://127.0.0.1:9000/test/a', 'GET', null, options, function(err, res) {
+        var now = misc.getUnixTimestamp();
+        assert.ok(err);
+        assert.ok(err.statusCode, 400);
+
+        assert.equal(res.headers['x-ratelimit-path-regex'], '/test/.*');
+        assert.equal(res.headers['x-ratelimit-limit'], 8);
+        assert.equal(res.headers['x-ratelimit-used'], 8);
+        assert.equal(res.headers['x-ratelimit-window'], '4 seconds');
+        assert.ok(res.headers['reply-after'] > now);
+
+        assert.match(res.body, /Limit of 8 requests in 4 seconds for path .*? has been reached/i);
+        callback();
+      });
     }
   ],
 
@@ -170,8 +223,36 @@ exports.test_rate_limiting = function(test, assert) {
       server.close();
     }
 
-    assert.equal(reqCountPath1, 5);
+    assert.equal(reqCountPath1, 5 + 8);
     assert.ok([5, 6].indexOf(reqCountPath2) !== -1);
+    test.finish();
+  });
+};
+
+exports.test_rate_limiting_admin_api = function(test, assert) {
+  var options = {'return_response': true, 'expected_status_codes': [200]};
+  async.waterfall([
+    function testInvalidApiKey(callback) {
+      options.headers = {'X-Api-Key': 'invalid'};
+      request('http://127.0.0.1:8001/v1.0/limits', 'POST', null, options, function(err, res) {
+        assert.ok(err);
+        assert.ok(err.statusCode, 401);
+        callback();
+      });
+    },
+
+    function testMissingParameters(callback) {
+      options.headers = {'X-Api-Key': 'abcd'};
+      request('http://127.0.0.1:8001/v1.0/limits', 'POST', null, options, function(err, res) {
+        assert.ok(err);
+        assert.ok(err.statusCode, 400);
+        callback();
+      });
+    }
+  ],
+
+  function(err) {
+    assert.ifError(err);
     test.finish();
   });
 };

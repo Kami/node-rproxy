@@ -2,16 +2,24 @@
   "server": {
     "host": "localhost",
     "port": 9000,
-    "secure": false
+    "secure": false,
+    "workers": 1
+  },
+
+  "admin_api": {
+    "host": "localhost",
+    "port": 8001,
+    "secure": false,
+    "key": "abcd"
   },
 
   "target": {
-    "host": "localhost",
-    "port": 9001,
+    "host": "google.com",
+    "port": 80,
     "secure": false,
     "middleware_run_list": {
       "request": ["identity_provider", "rate_limiting", "authentication"],
-      "response": ["usage", "rate_limiting", "header_remover"]
+      "response": ["usage", "rate_limiting", "header_remover", "stats"]
     }
   },
 
@@ -28,20 +36,7 @@
     "identity_provider": {},
      "rate_limiting": {
         "bucket_size": 4,
-        "limits": [
-          {
-            "method": "GET",
-            "path_regex": "/.*",
-            "limit": 10,
-            "period": 4
-          },
-          {
-            "method": "GET",
-            "path_regex": "/test/.*",
-            "limit": 4,
-            "period": 4
-          }
-        ],
+        "limits": [],
         "usage_proxy_path": "/limits",
         "usage_target_path": "/rate_limits"
     },
@@ -56,7 +51,8 @@
       "datacenter": "dfw2"
     },
     "header_remover": {
-      "prefixes": ["x-rp", "x-test"]
-    }
+      "prefixes": []
+    },
+    "stats": {}
   }
 }
