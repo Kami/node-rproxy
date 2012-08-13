@@ -20,6 +20,7 @@ exports.test_missing_tenant_id = function(test, assert) {
       var options = {'return_response': true};
       request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
         assert.ok(err);
+        assert.ok(res.headers.hasOwnProperty('x-rp-www-authenticate'));
         assert.equal(err.statusCode, 400);
         assert.match(res.body, /No tenant id provided/i);
         callback();
@@ -122,6 +123,7 @@ exports.test_invalid_auth_token = function(test, assert) {
       options.headers = {'X-Tenant-Id': '1234', 'X-Auth-Token': 'invalid'};
       request('http://127.0.0.1:9000', 'GET', null, options, function(err, res) {
         assert.ok(err);
+        assert.ok(res.headers.hasOwnProperty('x-rp-www-authenticate'));
         assert.equal(err.statusCode, 401);
         assert.match(res.body, /invalid or expired authentication token/i);
         callback();
