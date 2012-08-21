@@ -7,8 +7,10 @@ var argv = require('optimist')
   .usage('Usage: $0 -c [config path] -l [log level]')
   .alias('c', 'config')
   .alias('l', 'loglevel')
+  .alias('f', 'logformat')
   .default('c', './config.json')
   .default('l', 'DEBUG')
+  .default('f', 'console')
   .demand(['c'])
   .argv;
 
@@ -17,7 +19,7 @@ var AdminAPIServer = require('../lib/admin_api/server').AdminAPIServer;
 var config = require('../lib/util/config');
 
 // Set up logger
-logmagic.route('__root__', logmagic[argv.l], 'console');
+logmagic.route('__root__', logmagic[argv.l], argv.f);
 
 try {
   config = config.loadConfig(argv.c);
