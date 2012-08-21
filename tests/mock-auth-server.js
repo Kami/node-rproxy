@@ -125,8 +125,6 @@ function getToken_v2_0(req, res) {
       token = USERNAME_TO_TOKEN_MAP[username];
     }
 
-    console.log(creds)
-
     if (!token || !tenantId) {
       fail = true;
       statusCode = 501;
