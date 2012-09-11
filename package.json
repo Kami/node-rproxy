@@ -7,7 +7,7 @@
   "homepage": "https://github.com/racker/node-rproxy",
   "repository": {
     "type": "git",
-    "url": "git:/.github.com/racker/node-rproxy.git"
+    "url": "git://github.com/racker/node-rproxy.git"
   },
   "directories": {
     "lib": "./lib",

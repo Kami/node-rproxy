@@ -112,9 +112,18 @@ function getToken_v2_0(req, res) {
   }
   else {
     creds = req.body.auth;
-    tenantId = creds.tenantName;
-    username = TENANT_ID_TO_USERNAME_MAP[tenantId];
-    token = USERNAME_TO_TOKEN_MAP[username];
+
+    if (creds.tenantName) {
+      tenantId = creds.tenantName;
+      username = TENANT_ID_TO_USERNAME_MAP[tenantId];
+      token = USERNAME_TO_TOKEN_MAP[username];
+    }
+    else if (creds['RAX-KSKEY:apiKeyCredentials']) {
+      // TODO: actually check the password
+      username = creds['RAX-KSKEY:apiKeyCredentials'].username;
+      tenantId = USERNAME_TO_TENANT_ID_MAP[username];
+      token = USERNAME_TO_TOKEN_MAP[username];
+    }
 
     if (!token || !tenantId) {
       fail = true;
@@ -305,7 +314,7 @@ function getTenantInfo_v2_0(req, res) {
  * Run mock Auth 1.1 API http server.
  */
 function run() {
-  var ip = '127.0.0.1',
+  var ip = '0.0.0.0',
       port = 23542,
       server = express.createServer();
 
