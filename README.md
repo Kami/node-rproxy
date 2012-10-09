@@ -1,4 +1,4 @@
-## node-rproxy (Eon)
+## node-rproxy
 
 A reverse proxy for RESTful services.
 
