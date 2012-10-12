@@ -19,6 +19,15 @@ var TOKEN_TO_INFO = {
   'blahahahbtoken': ['username1', '1111'],
   'toldmeicouldntcomeoverandplayanymore' : ['yourmom', '6666'],
   'dev': ['joe', '7777'],
+  'dev1': ['joe', '11111'],
+  'dev2': ['joe', '22222'],
+  'dev3': ['joe', '33333'],
+  'dev4': ['joe', '44444'],
+  'dev5': ['joe', '55555'],
+  'dev6': ['joe', '66666'],
+  'dev7': ['joe', '77777'],
+  'dev8': ['joe', '88888'],
+  'dev9': ['joe', '99999'],
   'never-cache-this': ['fooooo', '02222']
 };
 
