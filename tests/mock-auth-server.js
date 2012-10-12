@@ -323,7 +323,7 @@ function getTenantInfo_v2_0(req, res) {
  * Run mock Auth 1.1 API http server.
  */
 function run() {
-  var ip = '0.0.0.0',
+  var ip = '127.0.0.1',
       port = 23542,
       server = express.createServer();
 
