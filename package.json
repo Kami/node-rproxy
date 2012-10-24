@@ -18,7 +18,7 @@
     "async": "= 0.1.18",
     "sprintf": "= 0.1.1",
     "logmagic": "= 0.1.4",
-    "http-proxy": "= 0.8.0",
+    "http-proxy": "= 0.8.4",
     "redis": "= 0.7.1",
     "cassandra-client": "= 0.9.1",
     "optimist": "= 0.3.1",
