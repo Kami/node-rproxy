@@ -15,17 +15,17 @@ if (typeof WScript !== "undefined") {
 
 process.title = "npm"
 
-var log = require("../lib/utils/log.js")
-log.waitForConfig()
-log.info("ok", "it worked if it ends with")
+var log = require("npmlog")
+log.pause() // will be unpaused when config is loaded.
+log.info("it worked if it ends with", "ok")
 
 var fs = require("graceful-fs")
   , path = require("path")
   , npm = require("../lib/npm.js")
-  , ini = require("../lib/utils/ini.js")
+  , npmconf = require("npmconf")
   , errorHandler = require("../lib/utils/error-handler.js")
 
-  , configDefs = require("../lib/utils/config-defs.js")
+  , configDefs = npmconf.defs
   , shorthands = configDefs.shorthands
   , types = configDefs.types
   , nopt = require("nopt")
@@ -36,7 +36,7 @@ if (path.basename(process.argv[1]).slice(-1)  === "g") {
   process.argv.splice(1, 1, "npm", "-g")
 }
 
-log.verbose(process.argv, "cli")
+log.verbose("cli", process.argv)
 
 var conf = nopt(types, shorthands)
 npm.argv = conf.argv.remain
@@ -50,14 +50,13 @@ if (conf.version) {
 }
 
 if (conf.versions) {
-  var v = process.versions
-  v.npm = npm.version
-  console.log(v)
-  return
+  npm.command = "version"
+  conf.usage = false
+  npm.argv = []
 }
 
-log.info("npm@"+npm.version, "using")
-log.info("node@"+process.version, "using")
+log.info("using", "npm@%s", npm.version)
+log.info("using", "node@%s", process.version)
 
 // make sure that this version of node works with this version of npm.
 var semver = require("semver")
