@@ -65,6 +65,16 @@
     },
     "header_remover": {
       "prefixes": ["x-rp"]
+    },
+    "tracing": {
+      "authentication": {
+        "url": null,
+        "username": null,
+        "apiKey": null
+      },
+      "restkin": {
+        "url": null
+      }
     }
   }
 }
