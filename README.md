@@ -154,6 +154,7 @@ client called [https://github.com/racker/node-tryfer](node-tryfer).
 
 ### Settings
 
+* `service_name_prefix` - Prefix which is prepended in front of the service name
 * `authentication.url` - URL to the Keystone authentication endpoint which is used
  to obtain the token which is then used to authenticate against the RESTkin API.
 * `authentication.username` - API username.

@@ -67,6 +67,7 @@
       "prefixes": ["x-test"]
     },
     "tracing": {
+      "service_name_prefix": "test",
       "authentication": {
         "url": "http://127.0.0.1:23542/v2.0",
         "username": "joe1",
