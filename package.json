@@ -19,8 +19,6 @@
     "sprintf": "= 0.1.1",
     "logmagic": "= 0.1.4",
     "http-proxy": "= 0.8.4",
-    "redis": "= 0.7.1",
-    "cassandra-client": "= 0.9.5",
     "optimist": "= 0.3.1",
     "sprintf": "= 0.1.1",
     "elementtree": "0.1.1",
@@ -30,6 +28,8 @@
     "rackspace-shared-utils": "0.1.14"
   },
   "optionalDependencies": {
+    "redis": "= 0.7.1",
+    "cassandra-client": "= 0.9.5",
     "tryfer": "git+https://github.com/racker/node-tryfer.git"
   },
   "devDependencies": {
