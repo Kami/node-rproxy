@@ -40,7 +40,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
         assert.equal(trace.annotations[0].key, 'sr');
         assert.equal(trace.annotations[1].key, 'http.headers');
         assert.equal(trace.annotations[2].key, 'rax.tenant_id');
-        assert.equal(trace.annotations[3].key, 'http.responsecode');
+        assert.equal(trace.annotations[3].key, 'http.response_code');
         assert.equal(trace.annotations[4].key, 'ss');
         res.end();
       });
