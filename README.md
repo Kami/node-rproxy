@@ -144,6 +144,22 @@ This middleware removes headers with the specified prefix from the response.
 * X-RP-Error-Code
 * X-RP-Error-Message
 
+### Tracing
+
+This middleware integrated wits Zipkin distributed tracing. It supports
+submitting traces to a remote RESTkin endpoint.
+
+For more information about tracing, please have a look at the Node tracing
+client called [https://github.com/racker/node-tryfer](node-tryfer).
+
+### Settings
+
+* `authentication.url` - URL to the Keystone authentication endpoint which is used
+ to obtain the token which is then used to authenticate against the RESTkin API.
+* `authentication.username` - API username.
+* `authentication.apiKey` - API key.
+* `restkin.url` - URL to the RESTkin HTTP endpoint
+
 # Running lint and tests
 
 By default tests are automatically run on every commit on [Travis-ci](http://travis-ci.org).
