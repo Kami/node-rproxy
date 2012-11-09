@@ -24,8 +24,22 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     function startMockRESTkinServer(callback) {
       server2 = express.createServer();
 
+      server2.use(express.bodyParser());
       server2.post('/11111/trace', function(req, res) {
+        var trace = req.body[0];
+
         receivedTracesCount++;
+
+        // Trace should have 4 annotations
+        // 1. Server receive
+        // 2. request_headers
+        // 3. user_id
+        // 4. server send
+        assert.equal(trace.annotations.length, 4);
+        assert.equal(trace.annotations[0].key, 'sr');
+        assert.equal(trace.annotations[1].key, 'request_headers');
+        assert.equal(trace.annotations[2].key, 'user_id');
+        assert.equal(trace.annotations[3].key, 'ss');
         res.end();
       });
 
