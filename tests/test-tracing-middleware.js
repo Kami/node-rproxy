@@ -30,18 +30,20 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
         receivedTracesCount++;
 
-        // Trace should have 5 annotations
+        // Trace should have 6 annotations
         // 1. Server receive
-        // 2. request headers
-        // 3. user id
-        // 4. response status code
-        // 5. server send
-        assert.equal(trace.annotations.length, 5);
+        // 2. request url
+        // 3. request headers
+        // 4. user id
+        // 5. response status code
+        // 6. server send
+        assert.equal(trace.annotations.length, 6);
         assert.equal(trace.annotations[0].key, 'sr');
-        assert.equal(trace.annotations[1].key, 'http.headers');
-        assert.equal(trace.annotations[2].key, 'rax.tenant_id');
-        assert.equal(trace.annotations[3].key, 'http.response_code');
-        assert.equal(trace.annotations[4].key, 'ss');
+        assert.equal(trace.annotations[1].key, 'http.url');
+        assert.equal(trace.annotations[2].key, 'http.headers');
+        assert.equal(trace.annotations[3].key, 'rax.tenant_id');
+        assert.equal(trace.annotations[4].key, 'http.response_code');
+        assert.equal(trace.annotations[5].key, 'ss');
         res.end();
       });
 
