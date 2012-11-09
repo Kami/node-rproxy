@@ -67,6 +67,7 @@
       "prefixes": ["x-rp"]
     },
     "tracing": {
+      "service_name_prefix": "test",
       "authentication": {
         "url": null,
         "username": null,
