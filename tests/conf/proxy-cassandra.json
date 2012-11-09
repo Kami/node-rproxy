@@ -66,6 +66,16 @@
     },
     "header_remover": {
       "prefixes": ["x-test"]
+    },
+    "tracing": {
+      "authentication": {
+        "url": "http://127.0.0.1:23542/v2.0",
+        "username": "joe1",
+        "apiKey": "dev1"
+      },
+      "restkin": {
+        "url": "http://127.0.0.1:4567"
+      }
     }
   }
 }
