@@ -18,8 +18,8 @@
     "port": 9001,
     "secure": false,
     "middleware_run_list": {
-      "request": ["identity_provider", "rate_limiting", "authentication"],
-      "response": ["usage", "rate_limiting", "header_remover"]
+      "request": ["identity_provider", "rate_limiting", "authentication", "tracing"],
+      "response": ["usage", "rate_limiting", "header_remover", "tracing"]
     }
   },
 
@@ -65,6 +65,17 @@
     },
     "header_remover": {
       "prefixes": ["x-rp"]
+    },
+    "tracing": {
+      "service_name_prefix": "test",
+      "authentication": {
+        "url": null,
+        "username": null,
+        "apiKey": null
+      },
+      "restkin": {
+        "url": null
+      }
     }
   }
 }
