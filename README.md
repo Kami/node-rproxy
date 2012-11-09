@@ -152,7 +152,7 @@ submitting traces to a remote RESTkin endpoint.
 For more information about tracing, please have a look at the Node tracing
 client called [https://github.com/racker/node-tryfer](node-tryfer).
 
-Note: This middleware is special, because if enabled it integrates with other
+Note: This middleware is special, because if enabled, it integrates with other
 middleware such as authentication and rate limiting.
 
 ### Settings
