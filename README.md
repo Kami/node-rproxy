@@ -144,7 +144,7 @@ This middleware removes headers with the specified prefix from the response.
 * X-RP-Error-Code
 * X-RP-Error-Message
 
-### Tracing
+## Tracing
 
 This middleware integrated wits Zipkin distributed tracing. It supports
 submitting traces to a remote RESTkin endpoint.
