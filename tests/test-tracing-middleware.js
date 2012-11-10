@@ -13,6 +13,9 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
         server1 = _server;
 
         server1.get('/test', function(req, res) {
+          // Make sure trace id is propagated to the backend
+          assert.ok(req.headers.hasOwnProperty('x-b3-traceid'));
+
           res.writeHead(200, {});
           res.end();
         });

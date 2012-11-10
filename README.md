@@ -164,6 +164,13 @@ middleware such as authentication and rate limiting.
 * `authentication.apiKey` - API key.
 * `restkin.url` - URL to the RESTkin HTTP endpoint
 
+### Other
+
+This middleware propagates parent trace ID in the request header called
+`x-b3-traceid` to the backend server.
+
+This ID can be used by the backend server to attach other child traces to it.
+
 # Running lint and tests
 
 By default tests are automatically run on every commit on [Travis-ci](http://travis-ci.org).
