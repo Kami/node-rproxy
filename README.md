@@ -1,4 +1,4 @@
-## node-rproxy (Eon)
+## node-rproxy
 
 A reverse proxy for RESTful services.
 
@@ -143,6 +143,33 @@ This middleware removes headers with the specified prefix from the response.
 
 * X-RP-Error-Code
 * X-RP-Error-Message
+
+## Tracing
+
+This middleware integrated wits Zipkin distributed tracing. It supports
+submitting traces to a remote RESTkin endpoint.
+
+For more information about tracing, please have a look at the Node tracing
+client called [https://github.com/racker/node-tryfer](node-tryfer).
+
+Note: This middleware is special, because if enabled, it integrates with other
+middleware such as authentication and rate limiting.
+
+### Settings
+
+* `service_name_prefix` - Prefix which is prepended in front of the service name
+* `authentication.url` - URL to the Keystone authentication endpoint which is used
+ to obtain the token which is then used to authenticate against the RESTkin API.
+* `authentication.username` - API username.
+* `authentication.apiKey` - API key.
+* `restkin.url` - URL to the RESTkin HTTP endpoint
+
+### Other
+
+This middleware propagates parent trace ID in the request header called
+`x-b3-traceid` to the backend server.
+
+This ID can be used by the backend server to attach other child traces to it.
 
 # Running lint and tests
 

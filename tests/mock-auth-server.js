@@ -19,6 +19,15 @@ var TOKEN_TO_INFO = {
   'blahahahbtoken': ['username1', '1111'],
   'toldmeicouldntcomeoverandplayanymore' : ['yourmom', '6666'],
   'dev': ['joe', '7777'],
+  'dev1': ['joe1', '11111'],
+  'dev2': ['joe2', '22222'],
+  'dev3': ['joe3', '33333'],
+  'dev4': ['joe4', '44444'],
+  'dev5': ['joe5', '55555'],
+  'dev6': ['joe6', '66666'],
+  'dev7': ['joe7', '77777'],
+  'dev8': ['joe8', '88888'],
+  'dev9': ['joe9', '99999'],
   'never-cache-this': ['fooooo', '02222']
 };
 
@@ -112,9 +121,18 @@ function getToken_v2_0(req, res) {
   }
   else {
     creds = req.body.auth;
-    tenantId = creds.tenantName;
-    username = TENANT_ID_TO_USERNAME_MAP[tenantId];
-    token = USERNAME_TO_TOKEN_MAP[username];
+
+    if (creds.tenantName) {
+      tenantId = creds.tenantName;
+      username = TENANT_ID_TO_USERNAME_MAP[tenantId];
+      token = USERNAME_TO_TOKEN_MAP[username];
+    }
+    else if (creds['RAX-KSKEY:apiKeyCredentials']) {
+      // TODO: actually check the password
+      username = creds['RAX-KSKEY:apiKeyCredentials'].username;
+      tenantId = USERNAME_TO_TENANT_ID_MAP[username];
+      token = USERNAME_TO_TOKEN_MAP[username];
+    }
 
     if (!token || !tenantId) {
       fail = true;
