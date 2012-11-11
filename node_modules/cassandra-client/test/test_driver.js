@@ -37,7 +37,7 @@ var UUID = require('../lib/driver').UUID;
 var util = require('./util');
 var decoder = require('../lib/decoder');
 
-var CASSANDRA_PORT = 19170;
+var CASSANDRA_PORT = 9160;
 
 function merge(a, b) {
   var c = {}, attrname;
@@ -117,6 +117,8 @@ exports.setUp = function(test, assert) {
       var cfInt = new CfDef({keyspace: ksName, name: 'CfInt', column_type: 'Standard', comparator_type: 'IntegerType', default_validation_class: 'IntegerType', key_validation_class: 'IntegerType'});
       var cfUtf8 = new CfDef({keyspace: ksName, name: 'CfUtf8', column_type: 'Standard', comparator_type: 'UTF8Type', default_validation_class: 'UTF8Type', key_validation_class: 'UTF8Type'});
       var cfBytes = new CfDef({keyspace: ksName, name: 'CfBytes', column_type: 'Standard', comparator_type: 'BytesType', default_validation_class: 'BytesType', key_validation_class: 'BytesType'});
+      var cfBoolean = new CfDef({keyspace: ksName, name: 'CfBoolean', column_type: 'Standard', comparator_type: 'BooleanType', default_validation_class: 'BooleanType', key_validation_class: 'BooleanType'});
+      var cfDate = new CfDef({keyspace: ksName, name: 'CfDate', column_type: 'Standard', comparator_type: 'DateType', default_validation_class: 'DateType', key_validation_class: 'DateType'});
       var cfUuid = new CfDef({keyspace: ksName, name: 'CfUuid', column_type: 'Standard', comparator_type: 'TimeUUIDType', default_validation_class: 'TimeUUIDType', key_validation_class: 'TimeUUIDType'});
       var cfUgly = new CfDef({keyspace: ksName, name: 'CfUgly', column_type: 'Standard', comparator_type: 'UTF8Type',
                               default_validation_class: 'LongType', key_validation_class: 'IntegerType',
@@ -127,7 +129,11 @@ exports.setUp = function(test, assert) {
                               ]});
       var cfCounter = new CfDef({keyspace: ksName, name: 'CfCounter', column_type: 'Standard', comparator_type: 'AsciiType', default_validation_class: 'CounterColumnType', key_validation_class: 'AsciiType'});
       var super1 = new CfDef({keyspace: ksName, name: 'Super1', column_type: 'Super', comparator_type: 'UTF8Type', subcomparator_type: 'UTF8Type'});
-      var keyspace1 = new KsDef({name: ksName, strategy_class: 'org.apache.cassandra.locator.SimpleStrategy', strategy_options: {'replication_factor': '1'}, cf_defs: [standard1, super1, cfInt, cfUtf8, cfLong, cfBytes, cfUuid, cfUgly, cfCounter]});
+      var cfReversed = new CfDef({keyspace: ksName, name: 'CfReversed1', column_type: 'Standard', comparator_type: 'UTF8Type(reversed=true)', default_validation_class: 'UTF8Type', key_validation_class: 'UTF8Type'});
+      var keyspace1 = new KsDef({name: ksName, 
+                                 strategy_class: 'org.apache.cassandra.locator.SimpleStrategy',
+                                 strategy_options: {'replication_factor': '1'}, 
+                                 cf_defs: [standard1, super1, cfInt, cfUtf8, cfLong, cfBytes, cfBoolean, cfDate, cfUuid, cfUgly, cfCounter, cfReversed]});
       sys.addKeyspace(keyspace1, function(addErr) {
         console.log(addErr);
         close();
@@ -278,7 +284,7 @@ exports.testConnectionKeyspaceDoesNotExistConnect = function(test, assert) {
 };
 
 exports.testPooledConnectionKeyspaceDoesNotExistConnect = function(test, assert) {
-  var con = new PooledConnection({hosts: ['127.0.0.1:19170'],
+  var con = new PooledConnection({hosts: ['127.0.0.1:9160'],
                                   keyspace: 'doesNotExist.',
                                   use_bigints: false});
   con.execute('SELECT * FROM foo', [], function(err) {
@@ -382,20 +388,20 @@ exports.testLongNoBigint = function(test, assert) {
       con.connectionInfo.use_bigints = false;
       assert.strictEqual(con.connectionInfo.use_bigints, false);
 
-      var updParms = [1,2,99];
+      var updParms = [1,-2,9999999999];
       con.execute('update CfLong set ?=? where key=?', updParms, function(updErr) {
         if (updErr) {
           con.close();
           assert.ok(false);
           test.finish();
         } else {
-          con.execute('select ? from CfLong where key=?', [1, 99], function(selErr, rows) {
+          con.execute('select ? from CfLong where key=?', [1, 9999999999], function(selErr, rows) {
             con.close();
             assert.strictEqual(rows.rowCount(), 1);
             var row = rows[0];
             assert.strictEqual(1, row.colCount());
             assert.strictEqual(1, row.cols[0].name);
-            assert.strictEqual(2, row.cols[0].value);
+            assert.strictEqual(-2, row.cols[0].value);
             test.finish();
           });
         }
@@ -455,6 +461,57 @@ exports.testBinary = function(test, assert) {
           assert.strictEqual(row.key.toString('base64'), binaryParams[2].toString('base64'));
           assert.strictEqual(row.cols[0].name.toString('base64'), binaryParams[0].toString('base64'));
           assert.strictEqual(row.cols[0].value.toString('base64'), binaryParams[1].toString('base64'));
+          test.finish();
+        });
+      }
+    });
+  });
+};
+
+exports.testBoolean = function(test, assert) {
+  connect(function(err, con) {
+    assert.ifError(err);
+    var key = 'binarytest';
+    var booleanParams = [true, false, true]
+    con.execute('update CfBoolean set ?=? where key=?', booleanParams, function(updErr) {
+      if (updErr) {
+        con.close();
+        assert.ok(false);
+        test.finish();
+      } else {
+          con.execute('select ? from CfBoolean where key=?', [true, true], function(selErr, rows) {
+          con.close();
+          assert.strictEqual(rows.rowCount(), 1);
+          var row = rows[0];
+          assert.strictEqual(row.key, true);
+          assert.strictEqual(row.cols[0].name, true);
+          assert.strictEqual(row.cols[0].value, false);
+          test.finish();
+        });
+      }
+    });
+  });
+};
+
+exports.testDate = function(test, assert) {
+  connect(function(err, con) {
+    assert.ifError(err);
+    var key = 'binarytest';
+      var now = new Date();
+      var dateParams = [now, now.getTime(), new Date(2021, 11, 11, 11, 11, 11, 111) ]
+    con.execute('update CfDate set ?=? where key=?', dateParams, function(updErr) {
+      if (updErr) {
+        con.close();
+        assert.ok(false);
+        test.finish();
+      } else {
+          con.execute('select ? from CfDate where key=?', [now, dateParams[2]], function(selErr, rows) {
+          con.close();
+          assert.strictEqual(rows.rowCount(), 1);
+          var row = rows[0];
+          assert.strictEqual(row.key.getTime(), dateParams[2].getTime());
+          assert.strictEqual(row.cols[0].name.getTime(), now.getTime());
+          assert.strictEqual(row.cols[0].value.getTime(), now.getTime());
           test.finish();
         });
       }
@@ -766,6 +823,57 @@ exports.testCustomValidators = function(test, assert) {
   });
 };
 
+exports.testReversedString = function(test, assert) {
+  connect(function(err, con) {
+    if (err) {
+      assert.ok(false);
+      test.finish();
+    } else {
+      var updParms = ['a', 'foo', 'c', 'zoo', 'b', 'boo', 'rev_key_0'];
+      var selParms = ['rev_key_0'];
+      con.execute('update CfReversed1 set ?=?, ?=?, ?=? where key=?', updParms, function (updErr) {
+        if (updErr) {
+          con.close();
+          assert.ok(false);
+          test.finish();
+        } else {
+          con.execute('select * from CfReversed1 where key=?', selParms, function(selErr, rows) {
+            con.close();
+            if (selErr) {
+              assert.ok(false);
+            } else {
+              // verify sort is reversed.
+              assert.strictEqual(rows.length, 1);
+              var cols = rows[0].cols;
+              assert.strictEqual(cols[0].name, 'c');
+              assert.strictEqual(cols[1].name, 'b');
+              assert.strictEqual(cols[2].name, 'a');
+            }
+            test.finish();
+          });
+        }
+      });
+    }
+  });
+};
+
+
+exports.testUndefinedParam = function(test, assert) {
+  connect(function(err, con) {
+    if (err) {
+      assert.ok(false);
+      test.finish();
+    } else {
+      con.execute('UPDATE CfUtf8 SET ?=? WHERE KEY=?', [undefined, 'aaa', 'missing_col_0'], function(err) {
+        con.close();
+        assert.ok(err);
+        assert.strictEqual('null/undefined query parameter', err.message);
+        test.finish();
+      });
+    }
+  });
+};
+
 // this test only works an order-preserving partitioner.
 // it also uses an event-based approach to doing things.
 //exports.ZDISABLED_testMultipleRows = function(test, assert) {
@@ -808,7 +916,7 @@ exports.testCustomValidators = function(test, assert) {
 //      ev.on('cfready', function() {
 //
 //        // insert 100 rows.
-//        var con = new Connection('127.0.0.1', 19170, 'ints', null, null, {use_bigints: true});
+//        var con = new Connection('127.0.0.1', 9160, 'ints', null, null, {use_bigints: true});
 //        var count = 100;
 //        var num = 0;
 //        for (var i = 0; i < count; i++) {
@@ -850,7 +958,7 @@ exports.testCustomValidators = function(test, assert) {
 
 
 exports.testPooledConnectionFailover = function(test, assert) {
-  var hosts = ['google.com:8000', '127.0.0.1:6567', '127.0.0.1:19170', '127.0.0.2'];
+  var hosts = ['google.com:8000', '127.0.0.1:6567', '127.0.0.1:9160', '127.0.0.2'];
   var conn = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1', use_bigints: true, 'timeout': 5000});
 
   async.series([
@@ -870,7 +978,7 @@ exports.testPooledConnectionFailover = function(test, assert) {
 
 exports.testLearnStepTimeout = function(test, assert) {
   var server = null;
-  var hosts = ['127.0.0.1:8688', '127.0.0.1:19170'];
+  var hosts = ['127.0.0.1:8688', '127.0.0.1:9160'];
   var conn = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1', use_bigints: true, 'timeout': 5000});
 
   async.series([
@@ -881,8 +989,8 @@ exports.testLearnStepTimeout = function(test, assert) {
       server.listen(8688, '127.0.0.1', callback);
     },
 
-      function executeQueryPooledConnection(callback) {
-        conn.execute('UPDATE CfUgly SET A=1 WHERE KEY=1', [], function(err) {
+    function executeQueryPooledConnection(callback) {
+      conn.execute('UPDATE CfUgly SET A=1 WHERE KEY=1', [], function(err) {
         assert.ifError(err);
         callback();
       });
@@ -907,7 +1015,7 @@ exports.testPooledConnection = function(test, assert) {
   }
 
   //var hosts = ["127.0.0.2:9170", "127.0.0.1:9170"];
-  var hosts = ["127.0.0.1:19170"];
+  var hosts = ["127.0.0.1:9160"];
   var conn = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1', use_bigints: true});
 
   var range = new Array(100).join(' ').split(' ');
@@ -934,7 +1042,7 @@ exports.testPooledConnection = function(test, assert) {
 };
 
 exports.testTimeLogging = function(test, assert) {
-  var hosts = ["127.0.0.1:19170"];
+  var hosts = ["127.0.0.1:9160"];
   var baseOptions = {'hosts': hosts, 'keyspace': 'Keyspace1', use_bigints: true};
   var options1 = merge(baseOptions, {});
   var options2 = merge(baseOptions, {'log_time': true});
@@ -993,7 +1101,7 @@ exports.testTimeLogging = function(test, assert) {
 exports.testConnectionInPool = function(test, assert) {
   var con = new ConnectionInPool({
     host: '127.0.0.1',
-    port: 19170,
+    port: 9160,
     keyspace: 'Keyspace1',
     use_bigints: true
   });
@@ -1009,7 +1117,7 @@ exports.testConnectionInPool = function(test, assert) {
 
 
 exports.testPooledConnectionLoad = function(test, assert) {
-  var hosts = ['127.0.0.1:19170'];
+  var hosts = ['127.0.0.1:9160'];
   var conn = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1', 'timeout': 10000});
 
   var count = 3000;
@@ -1062,7 +1170,7 @@ exports.testPooledConnectionLoad = function(test, assert) {
 // We want to test if all executes of a pooled connection are finished before
 // the shutdown callback is called.
 exports.testPooledConnectionShutdown = function(test, assert) {
-  var hosts = ['127.0.0.1:19170'];
+  var hosts = ['127.0.0.1:9160'];
   var conn = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1'});
 
   var expected = 100;
@@ -1084,8 +1192,9 @@ exports.testPooledConnectionShutdown = function(test, assert) {
   });
 };
 
+
 exports.testPooledConnectionShutdownTwice = function(test, assert) {
-  var hosts = ['127.0.0.1:19170'];
+  var hosts = ['127.0.0.1:9160'];
   var conn = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1'});
 
   var expected = 100;
@@ -1115,5 +1224,17 @@ exports.testPooledConnectionShutdownTwice = function(test, assert) {
   conn.shutdown(function(err) {
     assert.ok(err);
     secondCbCalledImmediatelyWithError = true;
+  });
+};
+
+
+exports.testPooledContainerImmediateShutdown = function(test, assert) {
+  var hosts = ['127.0.0.1:9160'];
+  var pool = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1'});
+
+  pool.connect();
+  pool.shutdown(function(err) {
+    assert.ifError(err);
+    test.finish();
   });
 };

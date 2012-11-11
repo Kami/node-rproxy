@@ -6,6 +6,16 @@ node-cassandra-client is a [Node.js](http://nodejs.org) CQL driver for [Apache C
 CQL is a query language for Apache Cassandra.  You use it in much the same way you would use SQL for a relational database.
 The Cassandra [documentation](http://www.datastax.com/docs/1.0/references/cql/index) can help you learn the syntax.
 
+Installation
+====================
+
+    $ npm install cassandra-client
+    
+Build status
+====================
+
+[![Build Status](https://secure.travis-ci.org/racker/node-cassandra-client.png)](http://travis-ci.org/racker/node-cassandra-client)
+
 License
 ====================
 
@@ -14,16 +24,12 @@ node-cassandra-client is distributed under the [Apache license](http://www.apach
 [lib/bigint.js](https://github.com/racker/node-cassandra-client/blob/master/lib/bigint.js) is [borrowed](https://github.com/joyent/node/blob/master/deps/v8/benchmarks/crypto.js)
 from the Node.js source (which comes from the [V8](http://code.google.com/p/v8/) source).
 
-Installation
-====================
-
-    $ npm install cassandra-client
 
 Using It
 ====================
 
 ### Access the System keyspace
-    var System = require('node-cassandra-client').System;
+    var System = require('cassandra-client').System;
     var sys = new System('127.0.0.1:9160');
 
     sys.describeKeyspace('Keyspace1', function(err, ksDef) {
@@ -32,7 +38,7 @@ Using It
       } else {
         // assume ksDef contains a full description of the keyspace (uses the thrift structure).
       }
-    }
+    });
     
 ### Create a keyspace
     sys.addKeyspace(ksDef, function(err) {
@@ -46,7 +52,7 @@ Using It
 ### Updating
 This example assumes you have strings for keys, column names and values:
 
-    var Connection = require('node-cassandra-client').Connection;
+    var Connection = require('cassandra-client').Connection;
     var con = new Connection({host:'cassandra-host', port:9160, keyspace:'Keyspace1', user:'user', pass:'password'});
     con.execute('UPDATE Standard1 SET ?=? WHERE key=?', ['cola', 'valuea', 'key0'], function(err) {
         if (err) {
@@ -66,7 +72,6 @@ The `Connection` constructor accepts the following properties:
     use_bigints: [optional] boolean. toggles whether or not BigInteger or Number instances are in results.
     timeout:     [optional] number. Connection timeout. Defaults to 4000ms.
     log_time:    [optional] boolean. Log execution time for all the queries.
-                 Timing is logged to 'node-cassandra-client.driver.timing' route. Defaults to false.
 
 ### Getting data
 **NOTE:** You'll only get ordered and meaningful results if you are using an order-preserving partitioner.
@@ -87,7 +92,7 @@ Assume the updates have happened previously.
 	
 ### Pooled Connections
     // Creating a new connection pool.
-    var PooledConnection = require('node-cassandra-client').PooledConnection;
+    var PooledConnection = require('cassandra-client').PooledConnection;
     var hosts = ['host1:9160', 'host2:9170', 'host3', 'host4'];
     var connection_pool = new PooledConnection({'hosts': hosts, 'keyspace': 'Keyspace1'});
 
@@ -133,7 +138,7 @@ open connections after pending requests are complete.
 ### Logging
 Instances of `Connection()` and `PooledConnection()` are `EventEmitter`'s and emit `log` events:
 
-    var Connection = require('node-cassandra-client').Connection;
+    var Connection = require('cassandra-client').Connection;
     var con = new Connection({host:'cassandra-host', port:9160, keyspace:'Keyspace1', user:'user', pass:'password'});
     con.on('log', function(level, message, obj) {
       console.log('log event: %s -- %j', level, message);
