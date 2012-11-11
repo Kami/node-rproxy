@@ -158,6 +158,9 @@ middleware such as authentication and rate limiting.
 ### Settings
 
 * `service_name_prefix` - Prefix which is prepended in front of the service name
+* `ignored_headers` - A list of request header names which are stripped from the
+ from the request header object which is stored as an annotation on the trace 
+ object.
 * `authentication.url` - URL to the Keystone authentication endpoint which is used
  to obtain the token which is then used to authenticate against the RESTkin API.
 * `authentication.username` - API username.

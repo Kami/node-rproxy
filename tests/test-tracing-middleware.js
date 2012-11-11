@@ -29,7 +29,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
       server2.use(express.bodyParser());
       server2.post('/11111/trace', function(req, res) {
-        var trace = req.body[0];
+        var trace = req.body[0], traceHeaders;
 
         receivedTracesCount++;
 
@@ -49,6 +49,13 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
         assert.equal(trace.annotations[4].key, 'rax.tenant_id');
         assert.equal(trace.annotations[5].key, 'http.response.code');
         assert.equal(trace.annotations[6].key, 'ss');
+
+        // Verify that headers have been correctly sanitized
+        traceHeaders = JSON.parse(trace.annotations[2].value);
+        assert.ok(!traceHeaders.hasOwnProperty('foo'));
+        assert.ok(!traceHeaders.hasOwnProperty('moo'));
+        assert.ok(traceHeaders.hasOwnProperty('bar'));
+
         res.end();
       });
 
@@ -56,7 +63,8 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     },
 
     function issueRequestSuccess(callback) {
-      var options = {'return_response': true, 'expected_status_codes': [200]};
+      var options = {'return_response': true, 'expected_status_codes': [200],
+                     'headers': {'foo': 'bar', 'bar': 'baz', 'mOO': 'ponies'} };
 
       request('http://127.0.0.1:9000/test', 'GET', null, options, function(err, res) {
         assert.equal(res.statusCode, 200);
@@ -66,7 +74,8 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     },
 
     function issueRequestRESTkinBackendIsDown(callback) {
-      var options = {'return_response': true, 'expected_status_codes': [200]};
+      var options = {'return_response': true, 'expected_status_codes': [200],
+                     'headers': {'foo': 'bar', 'bar': 'baz', 'mOO': 'ponies'}};
 
       server2.close();
       server2 = null;
