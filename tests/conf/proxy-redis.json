@@ -69,7 +69,7 @@
     "tracing": {
       "service_name_prefix": "test",
       "max_traces": 1,
-      "send_interval": 10000,
+      "send_interval": 10,
       "ignored_headers": ["foo", "moo"],
       "authentication": {
         "url": "http://127.0.0.1:23542/v2.0",
