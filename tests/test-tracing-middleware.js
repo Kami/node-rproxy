@@ -31,34 +31,37 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
       server2.use(express.bodyParser());
       server2.post('/11111/trace', function(req, res) {
-        console.log(req.body)
-        var serverRecvTrace = req.body[1], clientSendTrace = req.body[0],
-            traceHeaders;
+        var trace = req.body[0], traceHeaders;
 
         receivedTracesCount++;
 
-        // serverRecvTrace should have 7 annotations
-        // 1. Server receive
-        // 2. request url
-        // 3. request headers
-        // 4. request origin remote address
-        // 5. user id
-        // 5. response status code
-        // 7. server send
-        assert.equal(serverRecvTrace.annotations.length, 7);
-        assert.equal(serverRecvTrace.annotations[0].key, 'sr');
-        assert.equal(serverRecvTrace.annotations[1].key, 'http.uri');
-        assert.equal(serverRecvTrace.annotations[2].key, 'http.request.headers');
-        assert.equal(serverRecvTrace.annotations[3].key, 'http.request.remote_address');
-        assert.equal(serverRecvTrace.annotations[4].key, 'rax.tenant_id');
-        assert.equal(serverRecvTrace.annotations[5].key, 'http.response.code');
-        assert.equal(serverRecvTrace.annotations[6].key, 'ss');
+        if (receivedTracesCount === 1) {
+          // First trace should have 7 annotations
+          // 1. Server receive
+          // 2. request url
+          // 3. request headers
+          // 4. request origin remote address
+          // 5. user id
+          // 5. response status code
+          // 7. server send
+          assert.equal(trace.annotations.length, 7);
+          assert.equal(trace.annotations[0].key, 'sr');
+          assert.equal(trace.annotations[1].key, 'http.uri');
+          assert.equal(trace.annotations[2].key, 'http.request.headers');
+          assert.equal(trace.annotations[3].key, 'http.request.remote_address');
+          assert.equal(trace.annotations[4].key, 'rax.tenant_id');
+          assert.equal(trace.annotations[5].key, 'http.response.code');
+          assert.equal(trace.annotations[6].key, 'ss');
 
-        // Verify that headers have been correctly sanitized
-        traceHeaders = JSON.parse(trace.annotations[2].value);
-        assert.ok(!traceHeaders.hasOwnProperty('foo'));
-        assert.ok(!traceHeaders.hasOwnProperty('moo'));
-        assert.ok(traceHeaders.hasOwnProperty('bar'));
+          // Verify that headers have been correctly sanitized
+          traceHeaders = JSON.parse(trace.annotations[2].value);
+          assert.ok(!traceHeaders.hasOwnProperty('foo'));
+          assert.ok(!traceHeaders.hasOwnProperty('moo'));
+          assert.ok(traceHeaders.hasOwnProperty('bar'));
+        }
+        else if (receivedTracesCount === 2) {
+          assert.equal(trace.annotations[0].key, 'cs');
+        }
 
         res.end();
       });
@@ -103,7 +106,8 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
       server2.close();
     }
 
-    assert.equal(receivedTracesCount, 1);
+    // Should receive two traces - serverRecv, clientSend
+    assert.equal(receivedTracesCount, 2);
     test.finish();
   });
 };
