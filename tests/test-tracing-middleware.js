@@ -61,6 +61,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
         }
         else if (receivedTracesCount === 2) {
           assert.equal(trace.annotations[0].key, 'cs');
+          assert.equal(trace.annotations[1].key, 'cr');
         }
 
         res.end();
