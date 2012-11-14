@@ -1,20 +1,20 @@
 {
   "server": {
-    "host": "localhost",
+    "host": "127.0.0.1",
     "port": 9000,
     "secure": false,
     "workers": 2
   },
 
   "admin_api": {
-    "host": "localhost",
+    "host": "127.0.0.1",
     "port": 8001,
     "secure": false,
     "key": "abcd"
   },
 
   "target": {
-    "host": "localhost",
+    "host": "127.0.0.1",
     "port": 9001,
     "secure": false,
     "middleware_run_list": {
@@ -26,7 +26,7 @@
   "database": {
     "backend": "redis",
     "settings": {
-      "host": "localhost",
+      "host": "127.0.0.1",
       "port": 6379,
       "password": null
     }
@@ -68,6 +68,8 @@
     },
     "tracing": {
       "service_name_prefix": "test",
+      "max_traces": 1,
+      "send_interval": 10,
       "ignored_headers": ["foo", "moo"],
       "authentication": {
         "url": "http://127.0.0.1:23542/v2.0",
