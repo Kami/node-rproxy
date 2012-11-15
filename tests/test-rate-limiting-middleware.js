@@ -1,6 +1,7 @@
 var querystring = require('querystring');
 
 var async = require('async');
+var express = require('express');
 
 var request = require('util/request').request;
 var testUtil = require('util/test');
@@ -230,8 +231,33 @@ exports.test_rate_limiting = function(test, assert) {
 };
 
 exports.test_rate_limiting_admin_api = function(test, assert) {
-  var options = {'return_response': true, 'expected_status_codes': [200]};
+  var options = {'return_response': true, 'expected_status_codes': [200]},
+      server = null;
+
   async.waterfall([
+    function startBackendServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
+        server = _server;
+
+        server.post('/rate_limits', function(req, res) {
+          var buffer = '';
+          req.on('data', function(chunk) {
+            // Note: For some reason express.bodyParser doesn't work as expected
+            // here.
+            buffer += chunk;
+          });
+
+          req.on('end', function(){
+            // echo body back
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(buffer);
+          });
+        });
+
+        callback();
+      });
+    },
+
     function testInvalidApiKey(callback) {
       options.headers = {'X-Api-Key': 'invalid'};
       request('http://127.0.0.1:8001/v1.0/limits', 'POST', null, options, function(err, res) {
@@ -248,10 +274,59 @@ exports.test_rate_limiting_admin_api = function(test, assert) {
         assert.ok(err.statusCode, 400);
         callback();
       });
+    },
+
+    function testGetLimitsDefaultLimits(callback) {
+      var options = {'return_response': true, 'expected_status_codes': [200],
+                     'headers': {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'}};
+
+      request('http://127.0.0.1:9000/v1.0/limits', 'GET', null, options, function(err, res) {
+        var data, rule;
+        assert.ifError(err);
+
+        data = JSON.parse(res.body);
+        rule = data[0];
+
+        assert.equal(rule.path_regex, '/.*');
+        assert.equal(rule.limit, 10);
+        callback();
+      });
+    },
+
+    function testOverrideAccountLimitsSuccess(callback) {
+      var values = {'userId': '7777', 'pathRegex': '/.*', 'value': '5456'}, url;
+      options.headers = {'X-Api-Key': 'abcd'};
+
+      url = 'http://127.0.0.1:8001/v1.0/limits?' + querystring.stringify(values);
+      request(url, 'POST', null, options, function(err, res) {
+        assert.ifError(err);
+        callback();
+      });
+    },
+
+    function testGetLimitsLimitHasBeenSuccesfullyOverriden(callback) {
+      var options = {'return_response': true, 'expected_status_codes': [200],
+                     'headers': {'X-Tenant-Id': '7777', 'X-Auth-Token': 'dev'}};
+
+      request('http://127.0.0.1:9000/v1.0/limits', 'GET', null, options, function(err, res) {
+        var data, rule;
+        assert.ifError(err);
+
+        data = JSON.parse(res.body);
+        rule = data[0];
+
+        assert.equal(rule.path_regex, '/.*');
+        assert.equal(rule.limit, 5456);
+        callback();
+      });
     }
   ],
 
   function(err) {
+    if (server) {
+      server.close();
+    }
+
     assert.ifError(err);
     test.finish();
   });
