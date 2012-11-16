@@ -319,6 +319,38 @@ exports.test_rate_limiting_admin_api = function(test, assert) {
         assert.equal(rule.limit, 5456);
         callback();
       });
+    },
+
+    function testGetUsageAndLimitsAdminEndpointMissingId(callback) {
+      var values = {'userId': '7777'}, url;
+      options.headers = {'X-Api-Key': 'abcd'};
+
+      url = 'http://127.0.0.1:8001/v1.0/usage';
+      request(url, 'GET', null, options, function(err, res) {
+        assert.ok(err.statusCode, 400);
+        callback();
+      });
+    },
+
+    function testGetUsageAndLimitsAdminEndpointSuccess(callback) {
+      var values = {'userId': '7777'}, url;
+      options.headers = {'X-Api-Key': 'abcd'};
+
+      url = 'http://127.0.0.1:8001/v1.0/usage?' + querystring.stringify(values);
+      request(url, 'GET', null, options, function(err, res) {
+        var data;
+
+        assert.ifError(err);
+        data = JSON.parse(res.body);
+
+        assert.equal(data.length, 2);
+        assert.equal(data[0].path_regex, '/.*');
+        assert.equal(data[0].used, 5);
+        assert.equal(data[0].period, 4);
+        assert.equal(data[0].limit, 5456);
+
+        callback();
+      });
     }
   ],
 
