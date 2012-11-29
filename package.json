@@ -29,7 +29,7 @@
   },
   "optionalDependencies": {
     "redis": "= 0.7.1",
-    "cassandra-client": "= 0.9.5",
+    "cassandra-client": "git+https://github.com/racker/node-cassandra-client.git",
     "tryfer": "git+https://github.com/racker/node-tryfer.git"
   },
   "devDependencies": {
