@@ -61,6 +61,16 @@ be found in `example/config.json`.
   * `request` - an array of middleware to run for every request
   * `response` - an array of middleware to run for every response
 
+# Special headers which are added to every request
+
+A list of special headers which are added to every request by rproxy before
+proxying it to the backend server.
+
+* `X-RP-Request-Id` - Unique ID associated with a request. This ID can be used
+to map and track the request between rproxy and the backend server.
+
+This ID can be used to track and map requests between rproxy and backend server even when tracing middleware is not used.
+
 # Middleware configuration options
 
 ## Identity provider
