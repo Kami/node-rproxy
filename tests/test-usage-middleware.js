@@ -115,7 +115,7 @@ exports.test_usage_middleware = function(test, assert) {
       request('http://127.0.0.1:9000/entity/corrupted', 'POST', null, options, function(err, res) {
         //notInObject(assert, res.headers, headerNames);
         assert.equal(res.statusCode, 201);
-        callback();
+        setTimeout(callback, 500);
       });
     }
   ],
