@@ -202,7 +202,11 @@ both) installed.
 
 ## Running tests with Cassandra backend
 
-`DB_BACKEND=cassandra CASSANDRA_HOME=<path to the directory containg cassandra binary> npm run-script test`
+`DB_BACKEND=cassandra CASSANDRA_HOME=<path to the directory containg cassandra binary> CASSANDRA_CONF=<path to cassandra configuration> npm run-script test`
+
+Sample configurations for Cassandra 1.1 and 1.2 are kept in `tests/conf/cass-1.1` and `tests/cass/cass-1.2`.
+You are welcome to use them during development, or you can specify your own configuration.
+By default, Travis-CI runs all tests against Cassandra 1.1.
 
 # TODO
 

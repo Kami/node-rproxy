@@ -2,7 +2,9 @@
 
 basedir=`dirname $0`
 
-export CASSANDRA_CONF=$basedir/../tests/conf/
+if [ ! $CASSANDRA_CONF ]; then
+    export CASSANDRA_CONF=$basedir/../tests/conf/cass-1.1
+fi
 
 if [ ! $CASSANDRA_HOME ]; then
     CASSANDRA_HOME="/opt/cassandra"
