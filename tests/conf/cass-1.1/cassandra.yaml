@@ -40,7 +40,6 @@ seed_provider:
 - class_name: org.apache.cassandra.locator.SimpleSeedProvider
   parameters:
   - {seeds: 127.0.0.1}
-sliced_buffer_size_in_kb: 64
 snapshot_before_compaction: false
 storage_port: 17001
 thrift_framed_transport_size_in_mb: 15
