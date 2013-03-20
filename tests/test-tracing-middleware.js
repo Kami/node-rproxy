@@ -87,7 +87,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
         }
         else if (receivedTracesCount === 2) {
           ['cs','cr'].forEach(function(header, index) {
-            if (trace.annotations[index].key !== header) {
+            if (!trace.annotations[index] || trace.annotations[index].key !== header) {
               problems.push('missing ' + header);
             }
           });
@@ -104,7 +104,14 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
     function issueRequestSuccess(callback) {
       var options = {'return_response': true, 'expected_status_codes': [200],
-                     'headers': {'foo': 'bar', 'bar': 'baz', 'mOO': 'ponies'} };
+                     'headers': {
+                       'foo': 'bar',
+                       'bar': 'baz',
+                       'mOO': 'ponies',
+                       'X-Tenant-Id': '7777',
+                       'X-Auth-Token': 'dev'
+                      }
+      };
 
       request('http://127.0.0.1:9000/test', 'GET', null, options, function(err, res) {
         if (res.statusCode !== 200) {
