@@ -4,7 +4,6 @@ var express = require('express');
 var request = require('util/request').request;
 var testUtil = require('util/test');
 
-// todo: this test is broken in several places. I'm disabling it and annotating the broken places.
 
 exports.test_tracing_request_and_response_middleware = function(test, assert) {
   var server1, server2, receivedTracesCount = 0;
