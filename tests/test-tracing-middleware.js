@@ -4,7 +4,10 @@ var express = require('express');
 var request = require('util/request').request;
 var testUtil = require('util/test');
 
+// todo: this test is broken in several places. I'm disabling it and annotating the broken places.
+
 exports.test_tracing_request_and_response_middleware = function(test, assert) {
+  test.skip();
   var server1, server2, receivedTracesCount = 0;
 
   async.waterfall([
@@ -14,6 +17,9 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
         server1.get('/test', function(req, res) {
           // Make sure trace id is propagated to the backend
+          // todo: we should not be any asserting here because the context (call stack) is quite different than when
+          // the request is made.  Instead, we should  note the problems, and return a 5xx and possibly a header
+          // indicating what was wrong.
           assert.ok(req.headers.hasOwnProperty('x-b3-traceid'));
           assert.ok(req.headers.hasOwnProperty('x-b3-spanid'));
           assert.ok(req.headers.hasOwnProperty('x-b3-parentspanid'));
@@ -27,6 +33,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     },
 
     function startMockRESTkinServer(callback) {
+      // todo: this service is never accessed.
       server2 = express.createServer();
 
       server2.use(express.bodyParser());
@@ -44,6 +51,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
           // 5. user id
           // 5. response status code
           // 7. server send
+          // todo: same assert problems as in server1.get() exist here.
           assert.equal(trace.annotations.length, 7);
           assert.equal(trace.annotations[0].key, 'sr');
           assert.equal(trace.annotations[1].key, 'http.uri');
