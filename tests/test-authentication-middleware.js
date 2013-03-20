@@ -140,6 +140,54 @@ exports.test_invalid_auth_token = function(test, assert) {
   });
 };
 
+exports.test_fake_auth_regex = function(test, assert) {
+  var server = null;
+  async.waterfall([
+    
+    function getServer(callback) {
+      testUtil.getTestHttpServer(9001, '127.0.0.1', function(err, _server) {
+        server = _server;
+        server.get('*', function(req, res) {
+          res.writeHead(200, {
+            'X-request-was-honored': 'woot'
+          });
+          res.end();
+        });
+        testUtil.setupErrorEchoHandlers(server);
+        callback();
+      });
+      
+    },
+    
+    function goodRequest(callback) {
+      var options = {'return_response': true, 'expected_status_codes': [200]};
+      options.headers = {'X-Tenant-Id': 'FAKEGARY', 'X-Auth-Token': 'FAKETOKEN'};
+      request('http://127.0.0.1:9000/', 'GET', null, options, function(err, res) {
+        assert.ok(!err);
+        callback();
+      });
+    },
+    
+    function badRequest(callback) {
+      var options = {'return_response': true};
+      options.headers = {'X-Tenant-Id': 'XXXXGARY', 'X-Auth-Token': 'XXXXTOKEN'};
+      request('http://127.0.0.1:9000/', 'GET', null, options, function(err, res) {
+        assert.ok(err);
+        assert.strictEqual(res.statusCode, 200); // Why not 404? Auth failed!
+        callback();
+      });
+    }
+  ],
+    
+  function(err) {
+    if (server) {
+      server.close();
+    }
+    assert.ifError(err);
+    test.finish();
+  });
+};
+
 exports.test_valid_auth_token = function(test, assert) {
   var server = null, reqCount = 0;
 
