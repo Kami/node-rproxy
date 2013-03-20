@@ -18,7 +18,7 @@
     "port": 9001,
     "secure": false,
     "middleware_run_list": {
-      "request": ["identity_provider", "rate_limiting", "authentication"],
+      "request": ["identity_provider", "rate_limiting", "authentication", "tracing"],
       "response": ["usage", "rate_limiting", "header_remover"]
     }
   },
