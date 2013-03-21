@@ -35,7 +35,6 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     },
 
     function startMockRESTkinServer(callback) {
-      // todo: this service is never accessed.
       server2 = express.createServer();
 
       server2.use(express.bodyParser());
@@ -73,7 +72,7 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
           }
 
           // Verify that headers have been correctly sanitized
-          traceHeaders = JSON.parse(trace.annotations[2].value);
+          traceHeaders = (trace.hasOwnProperty('annotations') && trace.annotations[2]) ? JSON.parse(trace.annotations[2].value) : {};
           if (traceHeaders.hasOwnProperty('foo')) {
             problems.push('contained header foo');
           }
@@ -107,9 +106,9 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
                        'foo': 'bar',
                        'bar': 'baz',
                        'mOO': 'ponies',
-                       'X-Tenant-Id': '7777',
-                       'X-Auth-Token': 'dev'
-                      }
+                       'X-Tenant-Id': '99999',
+                       'X-Auth-Token': 'dev9'
+                     }
       };
 
       request('http://127.0.0.1:9000/test', 'GET', null, options, function(err, res) {
@@ -124,7 +123,14 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
     function issueRequestRESTkinBackendIsDown(callback) {
       var options = {'return_response': true, 'expected_status_codes': [200],
-                     'headers': {'foo': 'bar', 'bar': 'baz', 'mOO': 'ponies'}};
+                     'headers': {
+                       'foo': 'bar',
+                       'bar': 'baz',
+                       'mOO': 'ponies',
+                       'X-Tenant-Id': '99999',
+                       'X-Auth-Token': 'dev9'
+                     }
+      };
 
       server2.close();
       server2 = null;
@@ -147,6 +153,8 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     if (server2) {
       server2.close();
     }
+    
+    assert.ifError(err);
 
     // Should receive two traces - serverRecv, clientSend
     assert.equal(receivedTracesCount, 2);
