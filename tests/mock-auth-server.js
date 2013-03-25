@@ -125,7 +125,8 @@ function getToken_v2_0(req, res) {
 
     if (creds.tenantName) {
       tenantId = creds.tenantName;
-      if (FAKE_ACCOUNT_REGEX.exec(tenantId)) {
+      // if you wish to use fake accounts, specify a tenant id beginning with 'FAKE' and then supply any token id. 
+      if (FAKE_ACCOUNT_REGEX.test(tenantId)) {
         username = tenantId;
         token = creds.token.id;
         TENANT_ID_TO_USERNAME_MAP[tenantId] = username;
