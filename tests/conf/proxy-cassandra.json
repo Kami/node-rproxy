@@ -18,7 +18,7 @@
     "port": 9001,
     "secure": false,
     "middleware_run_list": {
-      "request": ["identity_provider", "rate_limiting", "authentication"],
+      "request": ["identity_provider", "rate_limiting", "authentication", "tracing"],
       "response": ["usage", "rate_limiting", "header_remover"]
     }
   },
@@ -35,24 +35,24 @@
 
   "middleware": {
     "identity_provider": {},
-     "rate_limiting": {
-        "bucket_size": 4,
-        "limits": [
-          {
-            "method": "GET",
-            "path_regex": "/.*",
-            "limit": 10,
-            "period": 4
-          },
-          {
-            "method": "GET",
-            "path_regex": "/test/.*",
-            "limit": 4,
-            "period": 4
-          }
-        ],
-        "usage_proxy_path": "/limits",
-        "usage_target_path": "/rate_limits"
+    "rate_limiting": {
+      "bucket_size": 4,
+      "limits": [
+        {
+          "method": "GET",
+          "path_regex": "/.*",
+          "limit": 10,
+          "period": 4
+        },
+        {
+          "method": "GET",
+          "path_regex": "/test/.*",
+          "limit": 4,
+          "period": 4
+        }
+      ],
+      "usage_proxy_path": "/limits",
+      "usage_target_path": "/rate_limits"
     },
     "authentication": {
       "urls": ["http://127.0.0.1:23542/v2.0"],

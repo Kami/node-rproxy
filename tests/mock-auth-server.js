@@ -28,7 +28,7 @@ var TOKEN_TO_INFO = {
   'dev6': ['joe6', '66666'],
   'dev7': ['joe7', '77777'],
   'dev8': ['joe8', '88888'],
-  'dev9': ['joe9', '99999'],
+  'dev9': ['joe9', '99999'], // this user is reserved for test-tracing-middleware.js.
   'never-cache-this': ['fooooo', '02222']
 };
 

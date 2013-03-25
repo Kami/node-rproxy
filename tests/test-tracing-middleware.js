@@ -4,10 +4,11 @@ var express = require('express');
 var request = require('util/request').request;
 var testUtil = require('util/test');
 
-// todo: this test is broken in several places. I'm disabling it and annotating the broken places.
 
 exports.test_tracing_request_and_response_middleware = function(test, assert) {
+  // todo: test is behaving differently per backend. disabling for now.
   test.skip();
+  
   var server1, server2, receivedTracesCount = 0;
 
   async.waterfall([
@@ -17,14 +18,18 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
         server1.get('/test', function(req, res) {
           // Make sure trace id is propagated to the backend
-          // todo: we should not be any asserting here because the context (call stack) is quite different than when
-          // the request is made.  Instead, we should  note the problems, and return a 5xx and possibly a header
-          // indicating what was wrong.
-          assert.ok(req.headers.hasOwnProperty('x-b3-traceid'));
-          assert.ok(req.headers.hasOwnProperty('x-b3-spanid'));
-          assert.ok(req.headers.hasOwnProperty('x-b3-parentspanid'));
-
-          res.writeHead(200, {});
+          var missingHeaders = [];
+          ['x-b3-traceid', 'x-b3-spanid', 'x-b3-parentspanid'].forEach(function(header) {
+            if (!req.headers.hasOwnProperty(header)) {
+              missingHeaders.push(header);
+            }
+          });
+          
+          if (missingHeaders.length === 0) {
+            res.writeHead(200, {});
+          } else {
+            res.writeHead(500, {'X-missing-headers': missingHeaders.join(',')});
+          }
           res.end();
         });
 
@@ -33,15 +38,23 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     },
 
     function startMockRESTkinServer(callback) {
-      // todo: this service is never accessed.
       server2 = express.createServer();
 
       server2.use(express.bodyParser());
       server2.post('/11111/trace', function(req, res) {
-        var trace = req.body[0], traceHeaders;
+        var trace = req.body[0], traceHeaders, problems = [],
+            headerKeys = ['sr',
+                          'http.uri',
+                          'http.request.headers',
+                          'http.request.remote_address',
+                          'rax.tenant_id',
+                          'http.response.code',
+                          'ss'];
 
         receivedTracesCount++;
 
+        // todo: this should probably be treated as a black box.
+        
         if (receivedTracesCount === 1) {
           // First trace should have 7 annotations
           // 1. Server receive
@@ -51,27 +64,39 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
           // 5. user id
           // 5. response status code
           // 7. server send
-          // todo: same assert problems as in server1.get() exist here.
-          assert.equal(trace.annotations.length, 7);
-          assert.equal(trace.annotations[0].key, 'sr');
-          assert.equal(trace.annotations[1].key, 'http.uri');
-          assert.equal(trace.annotations[2].key, 'http.request.headers');
-          assert.equal(trace.annotations[3].key, 'http.request.remote_address');
-          assert.equal(trace.annotations[4].key, 'rax.tenant_id');
-          assert.equal(trace.annotations[5].key, 'http.response.code');
-          assert.equal(trace.annotations[6].key, 'ss');
+          if (trace.annotations.length !== 7) {
+            problems.push('Invalid number of annotations(' + trace.annotations.length + ')');
+          } else {
+            headerKeys.forEach(function(key, index) {
+              if (trace.annotations[index].key !== key) {
+                problems.push('missing ' + key);
+              }
+            });
+          }
 
           // Verify that headers have been correctly sanitized
-          traceHeaders = JSON.parse(trace.annotations[2].value);
-          assert.ok(!traceHeaders.hasOwnProperty('foo'));
-          assert.ok(!traceHeaders.hasOwnProperty('moo'));
-          assert.ok(traceHeaders.hasOwnProperty('bar'));
+          traceHeaders = (trace.hasOwnProperty('annotations') && trace.annotations[2]) ? JSON.parse(trace.annotations[2].value) : {};
+          if (traceHeaders.hasOwnProperty('foo')) {
+            problems.push('contained header foo');
+          }
+          if (traceHeaders.hasOwnProperty('moo')) {
+            problems.push('contained header moo');
+          }
+          if (!traceHeaders.hasOwnProperty('bar')) {
+            problems.push('did not contain header bar');
+          }
         }
         else if (receivedTracesCount === 2) {
-          assert.equal(trace.annotations[0].key, 'cs');
-          assert.equal(trace.annotations[1].key, 'cr');
+          ['cs','cr'].forEach(function(header, index) {
+            if (!trace.annotations[index] || trace.annotations[index].key !== header) {
+              problems.push('missing ' + header);
+            }
+          });
         }
 
+        if (problems.length > 0) {
+          res.writeHead(500, {'X-trace-errors': problems.join(',')});
+        }
         res.end();
       });
 
@@ -80,9 +105,19 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
     function issueRequestSuccess(callback) {
       var options = {'return_response': true, 'expected_status_codes': [200],
-                     'headers': {'foo': 'bar', 'bar': 'baz', 'mOO': 'ponies'} };
+                     'headers': {
+                       'foo': 'bar',
+                       'bar': 'baz',
+                       'mOO': 'ponies',
+                       'X-Tenant-Id': '99999',
+                       'X-Auth-Token': 'dev9'
+                     }
+      };
 
       request('http://127.0.0.1:9000/test', 'GET', null, options, function(err, res) {
+        if (res.statusCode !== 200) {
+          console.log(res.headers);
+        }
         assert.equal(res.statusCode, 200);
 
         setTimeout(callback, 1500);
@@ -91,7 +126,14 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
 
     function issueRequestRESTkinBackendIsDown(callback) {
       var options = {'return_response': true, 'expected_status_codes': [200],
-                     'headers': {'foo': 'bar', 'bar': 'baz', 'mOO': 'ponies'}};
+                     'headers': {
+                       'foo': 'bar',
+                       'bar': 'baz',
+                       'mOO': 'ponies',
+                       'X-Tenant-Id': '99999',
+                       'X-Auth-Token': 'dev9'
+                     }
+      };
 
       server2.close();
       server2 = null;
@@ -114,6 +156,8 @@ exports.test_tracing_request_and_response_middleware = function(test, assert) {
     if (server2) {
       server2.close();
     }
+    
+    assert.ifError(err);
 
     // Should receive two traces - serverRecv, clientSend
     assert.equal(receivedTracesCount, 2);
