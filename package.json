@@ -1,7 +1,7 @@
 {
   "name": "rproxy",
   "description": "A reverse proxy for RESTful services.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Tomaz Muraus <tomaz+npm@tomaz.me> http://www.tomaz.me",
   "keywords": [ "proxy", "http proxy", "reverse proxy"],
   "homepage": "https://github.com/racker/node-rproxy",
