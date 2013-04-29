@@ -8,12 +8,13 @@ var sprintf = require('sprintf').sprintf;
 var misc = require('rackspace-shared-utils/lib/misc');
 var log = require('logmagic').local('mock-auth-server');
 
+var FAKE_ACCOUNT_REGEX = new RegExp('^FAKE', 'g');
+
 /**
  * Maps tokens to external ids.
  * @type {Object}
  * @const
  */
-
 var TOKEN_TO_INFO = {
   'XXXXXXXXXXZZZZZZZ': ['reachdevsf', '666'],
   'blahahahbtoken': ['username1', '1111'],
@@ -27,7 +28,7 @@ var TOKEN_TO_INFO = {
   'dev6': ['joe6', '66666'],
   'dev7': ['joe7', '77777'],
   'dev8': ['joe8', '88888'],
-  'dev9': ['joe9', '99999'],
+  'dev9': ['joe9', '99999'], // this user is reserved for test-tracing-middleware.js.
   'never-cache-this': ['fooooo', '02222']
 };
 
@@ -124,8 +125,16 @@ function getToken_v2_0(req, res) {
 
     if (creds.tenantName) {
       tenantId = creds.tenantName;
-      username = TENANT_ID_TO_USERNAME_MAP[tenantId];
-      token = USERNAME_TO_TOKEN_MAP[username];
+      // if you wish to use fake accounts, specify a tenant id beginning with 'FAKE' and then supply any token id.
+      if (FAKE_ACCOUNT_REGEX.test(tenantId)) {
+        username = tenantId;
+        token = creds.token.id;
+        TENANT_ID_TO_USERNAME_MAP[tenantId] = username;
+        USERNAME_TO_TOKEN_MAP[username] = token;
+      } else {
+        username = TENANT_ID_TO_USERNAME_MAP[tenantId];
+        token = USERNAME_TO_TOKEN_MAP[username];
+      }
     }
     else if (creds['RAX-KSKEY:apiKeyCredentials']) {
       // TODO: actually check the password

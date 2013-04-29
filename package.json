@@ -1,7 +1,7 @@
 {
   "name": "rproxy",
   "description": "A reverse proxy for RESTful services.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Tomaz Muraus <tomaz+npm@tomaz.me> http://www.tomaz.me",
   "keywords": [ "proxy", "http proxy", "reverse proxy"],
   "homepage": "https://github.com/racker/node-rproxy",
@@ -29,7 +29,7 @@
   },
   "optionalDependencies": {
     "redis": "= 0.7.1",
-    "cassandra-client": "0.14.1",
+    "cassandra-client": ">= 0.14.x",
     "tryfer": "git+https://github.com/racker/node-tryfer.git"
   },
   "devDependencies": {
